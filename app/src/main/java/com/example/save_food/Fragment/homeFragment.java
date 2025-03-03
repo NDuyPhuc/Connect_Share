@@ -340,7 +340,7 @@ public class homeFragment extends Fragment {
 
 
     }
-
+    //
     private void processUserLocations(Context context, ArrayList<UserLocation> userLocations) {
         Intent intent = new Intent(context, MapsActivity.class);
         Gson gson = new Gson();
