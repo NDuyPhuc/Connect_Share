@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:padding="25dp"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    tools:context=".reportActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:lineSpacingExtra="0sp"
+        android:text="Email subject:"
+        android:textAppearance="@style/title"
+        android:translationY="-1.02sp" />
+
+    <LinearLayout
+        android:id="@+id/shape_1"
+        android:layout_width="334dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
+        android:gravity="center"
+        android:textColor="@android:color/black"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editText2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAppearance="@style/place_holde"
+            android:hint="Email subject"
+            android:background="@drawable/shape"
+            android:textColor="@android:color/black"
+            android:padding="10dp"/>
+    </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:lineSpacingExtra="2sp"
+        android:text="Body Email:"
+        android:textAppearance="@style/title"
+        android:translationY="-1.02sp" />
+    <LinearLayout
+        android:id="@+id/para_2"
+        android:layout_width="334dp"
+        android:layout_height="50dp"
+        >
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editText3"
+            android:layout_width="334dp"
+            android:layout_height="50dp"
+            android:textColor="@color/black"
+            android:padding="10dp"
+            android:hint="Body Email"
+            android:textAppearance="@style/place_holde"
+            android:background="@drawable/shape"/>
+    </LinearLayout>
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="163dp"
+        android:background="@drawable/rectangle"
+        android:gravity="center"
+        android:text="Send email" />
+</LinearLayout>

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:padding="25dp"
+    tools:context=".registerActivity">
+
+    <View
+        android:id="@+id/savefood_1"
+        android:layout_width="300dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="23dp"
+        android:background="@drawable/logo_connectshare"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/signin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="23dp"
+        android:layout_marginBottom="0dp"
+        android:gravity="center"
+        android:text="@string/signupyo"
+        android:textAppearance="@style/login_to_yo" />
+
+    <TextView
+        android:id="@+id/email_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:lineSpacingExtra="0sp"
+        android:text="@string/email_title"
+        android:textAppearance="@style/title"
+        android:translationY="-1.02sp" />
+
+    <LinearLayout
+        android:id="@+id/shape_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/shape"
+            android:hint="@string/hint_email"
+            android:padding="10dp"
+            android:textAppearance="@style/place_holde" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/pass_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:lineSpacingExtra="2sp"
+        android:text="@string/pass_title"
+        android:textAppearance="@style/title"
+        android:translationY="-1.02sp" />
+
+    <LinearLayout
+        android:id="@+id/shape_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        >
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/shape"
+            android:hint="@string/hint_pass"
+            android:padding="10dp"
+            android:textAppearance="@style/place_holde" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/rectangle"
+        android:layout_width="214dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="65dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginBottom="35dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:background="@drawable/rectangle"
+        >
+        <Button
+            android:id="@+id/btnlog"
+            android:layout_width="214dp"
+            android:layout_height="55dp"
+            android:gravity="center"
+            android:background="@drawable/rectangle_1"
+            android:text="@string/create_an_a"
+            android:textAppearance="@style/create_an_a" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/acc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textColor="@color/black"
+        android:layout_marginTop="20dp"
+        android:text="@string/haveaccount" />
+
+</LinearLayout>

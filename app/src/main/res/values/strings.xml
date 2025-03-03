@@ -1,0 +1,33 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="Map_API_KEY">AIzaSyAacOO7yRwLHKGkPSoWri-5_rYdbagJTEA</string>
+    <string name="app_name">Connect Share</string>
+    <string name="facebook_app_id">987879095692992</string>
+    <string name="fb_login_protocol_scheme">fb987879095692992</string>
+    <string name="facebook_client_token">56789</string>
+    <string name="navigation_draw_open">Open navigation drawer</string>
+    <string name="navigation_draw_close">Close navigation drawer</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="login_to_yo">Login to your account</string>
+    <string name="signupyo">Create to your account</string>
+    <string name="email_title">Email Address</string>
+    <string name="hint_email">Enter email</string>
+    <string name="pass_title">Password</string>
+    <string name="hint_pass">Enter password</string>
+    <string name="create_an_a">Login</string>
+    <string name="forgot_pass">Forgot password?</string>
+    <string name="or">Or</string>
+    <string name="signup"> Sign Up</string>
+    <string name="haveaccount">You have an account? </string>
+    <string name="buttonfb">Buton Facebook</string>
+    <string name="buttongg">Buton Google</string>
+    <string name="stringacc">Dont have an account?</string>
+    <string name="newpas">New password</string>
+    <string name="oldpass">Old password</string>
+    <string name="changepas">Change password</string>
+    <string name="change">Change</string>
+    <string name="nameprofile">User Name</string>
+    <string name="youremail">Your Email</string>
+    <string name="yourphone">Your Phone</string>
+    <string name="changeprofile">Change Profile</string>
+</resources>

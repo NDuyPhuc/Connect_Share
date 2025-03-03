@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="list_nganhhang">
+        <item>---</item>
+        <item>Đồ vật học tập</item>
+        <item>Quần áo</item>
+        <item>Đồ vật sinh hoạt</item>
+        <item>Đồ vật nghề nghiệp</item>
+    </string-array>
+</resources>
