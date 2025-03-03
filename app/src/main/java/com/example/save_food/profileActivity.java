@@ -26,8 +26,10 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
+import com.example.save_food.Fragment.homeFragment;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -129,7 +131,13 @@ public class profileActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                // Xử lý lỗi: Chuyển người dùng sang homeFragment
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.container_blank, new homeFragment()); // Thay thế fragment_container bằng ID của container trong layout của bạn
+                transaction.addToBackStack(null); // Thêm vào back stack để người dùng có thể quay lại
+                transaction.commit();
+                // Hiển thị thông báo yêu cầu người dùng vào lại "Favorites"
+                Toast.makeText(profileActivity.this, "Vui lòng truy cập lại để cập nhật vị trí!.", Toast.LENGTH_SHORT).show();
             }
         });
 

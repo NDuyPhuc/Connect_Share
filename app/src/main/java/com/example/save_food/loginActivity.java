@@ -200,53 +200,98 @@ public class loginActivity extends AppCompatActivity {
 
         }
     }
+    // Phương thức lấy vị trí cuối cùng đã biết (last known location)
     private void getLastLocation(){
-        if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED){
+        // Kiểm tra quyền truy cập vị trí
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Nếu chưa được cấp quyền, yêu cầu quyền
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_PERMISSION_CODE);
             return;
         }
+        // Lấy vị trí cuối cùng đã biết từ FusedLocationProviderClient
         Task<Location> task = fusedLocationProviderClient.getLastLocation();
         task.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                if(location != null){
+                if (location != null) {
+                    // Nếu lấy được vị trí, gán cho currentLocation
                     currentLocation = location;
-
+                } else {
+                    // Nếu không lấy được vị trí, gọi hàm requestLocationUpdate để yêu cầu cập nhật vị trí mới
+                    requestLocationUpdate();
                 }
             }
         });
     }
+    // Phương thức cập nhật vị trí của người dùng lên Firebase
     private void updateLocationOnLogin(FirebaseUser user) {
+        // Kiểm tra xem user có hợp lệ không
         if (user != null) {
-            // Lấy vị trí hiện tại của thiết bị
-            // (Bạn cần xác định làm thế nào để lấy được vị trí, có thể sử dụng LocationManager hoặc FusedLocationProviderClient)
-            double latitude = currentLocation.getLatitude();  // Thay thế bằng giá trị thực tế
-            double longitude = currentLocation.getLongitude(); // Thay thế bằng giá trị thực tế
+            // Kiểm tra xem currentLocation đã được khởi tạo chưa
+            if (currentLocation != null) {
+                // Nếu currentLocation không null, lấy tọa độ hiện tại
+                double latitude = currentLocation.getLatitude();
+                double longitude = currentLocation.getLongitude();
 
-            // Cập nhật thông tin vị trí lên Firebase Realtime Database
-            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(user.getUid());
+                // Lấy reference đến nút người dùng trong Firebase Realtime Database
+                DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(user.getUid());
 
-            // Tạo một HashMap để chứa dữ liệu cần cập nhật
-            HashMap<String, Object> locationMap = new HashMap<>();
-            locationMap.put("Latitude", latitude);
-            locationMap.put("Longitude", longitude);
+                // Tạo HashMap chứa dữ liệu cần cập nhật (tọa độ)
+                HashMap<String, Object> locationMap = new HashMap<>();
+                locationMap.put("Latitude", latitude);
+                locationMap.put("Longitude", longitude);
 
-            // Thực hiện cập nhật
-            userRef.updateChildren(locationMap)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                // Cập nhật thành công
-                                Log.d(TAG, "Location updated successfully");
-                            } else {
-                                // Cập nhật thất bại
-                                Log.w(TAG, "Error updating location", task.getException());
+                // Thực hiện cập nhật dữ liệu lên Firebase
+                userRef.updateChildren(locationMap)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    // Nếu cập nhật thành công, log thông báo thành công
+                                    Log.d(TAG, "Location updated successfully");
+                                } else {
+                                    // Nếu cập nhật thất bại, log thông báo lỗi
+                                    Log.w(TAG, "Error updating location", task.getException());
+                                }
                             }
-                        }
-                    });
+                        });
+            } else {
+                // Nếu currentLocation đang null thì log thông báo và gọi hàm requestLocationUpdate()
+                Log.w(TAG, "currentLocation is null. Unable to update location.");
+                requestLocationUpdate();
+
+            }
         }
     }
+
+    // Phương thức yêu cầu cập nhật vị trí mới nếu không lấy được vị trí hiện tại
+    private void requestLocationUpdate() {
+        // Kiểm tra quyền truy cập vị trí, nếu chưa được cấp thì yêu cầu cấp quyền
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_PERMISSION_CODE);
+            return;
+        }
+
+        // Yêu cầu lấy vị trí mới với độ chính xác cao
+        fusedLocationProviderClient.getCurrentLocation(com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener(new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if (location != null) {
+                            // Cập nhật currentLocation nếu lấy được vị trí mới
+                            currentLocation = location;
+                            Log.d(TAG, "New location obtained: " + location.getLatitude() + ", " + location.getLongitude());
+                        } else {
+                            Log.w(TAG, "Unable to obtain new location update");
+                        }
+                    }
+                });
+    }
+
+
+
     private void log(){
         progressDialog.show();
         String email = edtemail.getText().toString().trim();

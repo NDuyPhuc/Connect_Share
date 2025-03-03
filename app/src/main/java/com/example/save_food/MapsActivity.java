@@ -81,6 +81,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         mapFragment.getMapAsync(MapsActivity.this);
                     }
                 }
+                else{
+                    Toast.makeText(MapsActivity.this, "Vui lòng bật vị trí và truy cập lại!", Toast.LENGTH_SHORT).show();
+
+                }
             }
         });
     }

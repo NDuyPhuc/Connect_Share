@@ -74,7 +74,7 @@ public class VPAdapter extends RecyclerView.Adapter<VPAdapter.ViewHolder> {
                 imageViewDialog = dialogView.findViewById(R.id.dialog_post_img);
                 TendonHangDialog = dialogView.findViewById(R.id.NamDonHangPostDialog);
                 DiachiDialog = dialogView.findViewById(R.id.DiaChiPostDiaLog);
-                Glide.with(context).load(viewPagerItem.getImgaeId()).into(holder.imageView);
+                Glide.with(context).load(viewPagerItem.getImgaeId()).into(imageViewDialog);
                 TendonHangDialog.setText(tendonhang);
                 DiachiDialog.setText(Diachi);
                 Log.d("TextViewValue", TendonHangDialog.getText().toString());

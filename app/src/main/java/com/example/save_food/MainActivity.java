@@ -1,5 +1,8 @@
 package com.example.save_food;
 
+import static android.content.ContentValues.TAG;
+import static android.telephony.CellLocation.requestLocationUpdate;
+
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -7,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
@@ -39,7 +43,10 @@ import com.example.save_food.Fragment.ChatListFragment;
 import com.example.save_food.Fragment.UsersFragment;
 import com.example.save_food.Fragment.homeFragment;
 import com.example.save_food.notification.Token;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
@@ -56,6 +63,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -66,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     FirebaseUser user;
     FirebaseAuth mAuth;
     DrawerLayout drawerLayout;
+    private FusedLocationProviderClient fusedLocationProviderClient;
     private NavigationView mNavigationView;
     CircularImageView imgAvatar;
     TextView tvname;
@@ -77,6 +86,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static String SHARED_PREFS = "sharedPrefs";
     public static int RC_NOTIFICATIONS = 99;
     public static int LOCATIONS = 991;
+    private Location currentLocation;
+    private final int FINE_PERMISSION_CODE = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,8 +96,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
 
         // Khởi tạo các thành phần
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
+        Location currentLocation;
         mNavigationView = findViewById(R.id.Nav_view);
         imgAvatar = mNavigationView.getHeaderView(0).findViewById(R.id.img_avatar);
         tvname = mNavigationView.getHeaderView(0).findViewById(R.id.tvName);
@@ -105,6 +119,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Kiểm tra quyền truy cập vị trí
         checkLocationPermission();
         checkUserStatus();
+        FirebaseUser user = mAuth.getCurrentUser();
+        getLastLocation();
+        updateLocationOnLogin(user);
         if (isNetworkAvailable()) {
             loadDataFromFirebase();
         } else {
@@ -179,6 +196,96 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+    private void updateLocationOnLogin(FirebaseUser user) {
+        // Kiểm tra xem user có hợp lệ không
+        if (user != null) {
+            // Kiểm tra xem currentLocation đã được khởi tạo chưa
+            if (currentLocation != null) {
+                // Nếu currentLocation không null, lấy tọa độ hiện tại
+                double latitude = currentLocation.getLatitude();
+                double longitude = currentLocation.getLongitude();
+
+                // Lấy reference đến nút người dùng trong Firebase Realtime Database
+                DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(user.getUid());
+
+                // Tạo HashMap chứa dữ liệu cần cập nhật (tọa độ)
+                HashMap<String, Object> locationMap = new HashMap<>();
+                locationMap.put("Latitude", latitude);
+                locationMap.put("Longitude", longitude);
+
+                // Thực hiện cập nhật dữ liệu lên Firebase
+                userRef.updateChildren(locationMap)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    // Nếu cập nhật then công, log thông báo thành công
+                                    Log.d(TAG, "Location updated successfully");
+                                    //TODO
+                                    Toast.makeText(MainActivity.this, "Đã bật vị trí, vui lòng thoát ra truy cập lại!", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    // Nếu cập nhật thất bại, log thông báo lỗi
+                                    Log.w(TAG, "Error updating location", task.getException());
+                                }
+                            }
+                        });
+            } else {
+                // Nếu currentLocation đang null thì log thông báo và gọi hàm requestLocationUpdate()
+                Log.w(TAG, "currentLocation is null. Unable to update location.");
+                requestLocationUpdate();
+
+            }
+        }
+    }
+
+    private void getLastLocation() {
+        // Kiểm tra quyền truy cập vị trí
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Nếu chưa được cấp quyền, yêu cầu quyền
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_PERMISSION_CODE);
+            return;
+        }
+        // Lấy vị trí cuối cùng đã biết từ FusedLocationProviderClient
+        Task<Location> task = fusedLocationProviderClient.getLastLocation();
+        task.addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    // Nếu lấy được vị trí, gán cho currentLocation
+                    currentLocation = location;
+                } else {
+                    // Nếu không lấy được vị trí, gọi hàm requestLocationUpdate để yêu cầu cập nhật vị trí mới
+                    requestLocationUpdate();
+                }
+            }
+        });
+    }
+    private void requestLocationUpdate() {
+        // Kiểm tra quyền truy cập vị trí, nếu chưa được cấp thì yêu cầu cấp quyền
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_PERMISSION_CODE);
+            return;
+        }
+
+        // Yêu cầu lấy vị trí mới với độ chính xác cao
+        fusedLocationProviderClient.getCurrentLocation(com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener(new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if (location != null) {
+                            // Cập nhật currentLocation nếu lấy được vị trí mới
+                            currentLocation = location;
+                            Log.d(TAG, "New location obtained: " + location.getLatitude() + ", " + location.getLongitude());
+                            Toast.makeText(MainActivity.this, "Vị trí đã được bật, vui lòng đợi vài giây để loading...và truy cập lại", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Log.w(TAG, "Unable to obtain new location update");
+                            Toast.makeText(MainActivity.this, "Vui lòng bật vị trí để sử dụng", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
