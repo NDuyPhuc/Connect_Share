@@ -1,12 +1,26 @@
 package com.example.save_food.models;
 
+import com.google.firebase.database.DataSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class ThongTin_UpLoadClass {
     private String tenDonHang;
     private String diaChi;
     private String nganhHang;
     private String thoiGianHetHan;
     private String donViHetHan;
+    private String uid;
+    private List<DataSnapshot> imageSnapshots = new ArrayList<>();
 
+    public void setImageSnapshots(List<DataSnapshot> snapshots) {
+        this.imageSnapshots = snapshots;
+    }
+
+    public List<DataSnapshot> getImageSnapshots() {
+        return imageSnapshots;
+    }
 
     public ThongTin_UpLoadClass() {
     }
@@ -36,7 +50,13 @@ public class ThongTin_UpLoadClass {
     }
 
 
+    public String getUid() {
+        return uid;
+    }
 
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
     public String getDiaChi() {
         return diaChi;
