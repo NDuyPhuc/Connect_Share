@@ -14,13 +14,8 @@ public class ThongTin_UpLoadClass {
     private String uid;
     private List<DataSnapshot> imageSnapshots = new ArrayList<>();
 
-    public void setImageSnapshots(List<DataSnapshot> snapshots) {
-        this.imageSnapshots = snapshots;
-    }
-
-    public List<DataSnapshot> getImageSnapshots() {
-        return imageSnapshots;
-    }
+    // Thêm thuộc tính postId để lưu key của bài đăng
+    private String postId;
 
     public ThongTin_UpLoadClass() {
     }
@@ -48,7 +43,6 @@ public class ThongTin_UpLoadClass {
     public void setTenDonHang(String tenDonHang) {
         this.tenDonHang = tenDonHang;
     }
-
 
     public String getUid() {
         return uid;
@@ -80,6 +74,23 @@ public class ThongTin_UpLoadClass {
 
     public void setThoiGianHetHan(String thoiGianHetHan) {
         this.thoiGianHetHan = thoiGianHetHan;
+    }
+
+    public List<DataSnapshot> getImageSnapshots() {
+        return imageSnapshots;
+    }
+
+    public void setImageSnapshots(List<DataSnapshot> snapshots) {
+        this.imageSnapshots = snapshots;
+    }
+
+    // Getter và Setter cho postId
+    public String getPostId() {
+        return postId;
+    }
+
+    public void setPostId(String postId) {
+        this.postId = postId;
     }
 
     public String toStringg() {

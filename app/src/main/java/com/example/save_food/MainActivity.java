@@ -115,7 +115,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mNavigationView.setNavigationItemSelectedListener(this);
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("Users");
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        NavigationView navigationView = findViewById(R.id.Nav_view);
 
+        // Chọn item đầu tiên khi mở app
+        navigationView.setCheckedItem(R.id.nav_home);
+        // Xóa trạng thái chọn mặc định
+        bottomNavigationView.setSelectedItemId(R.id.none);
         // Kiểm tra quyền truy cập vị trí
         checkLocationPermission();
         checkUserStatus();

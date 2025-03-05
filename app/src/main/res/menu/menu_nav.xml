@@ -8,7 +8,11 @@
             android:id="@+id/nav_home"
             android:title="Home"
             android:icon="@drawable/home"/>
-
+        <item
+            android:id="@+id/none"
+            android:title=""
+            android:enabled="false"
+            android:visible="false"/>
     </group>
     <item
         android:id="@+id/nav_myprofile"

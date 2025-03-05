@@ -41,6 +41,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -87,6 +88,11 @@ public class homeFragment extends Fragment {
         dialog.setLayoutColor(getResources().getColor(R.color.BeautifulProgressDialogBg));
         dialog.setMessageColor(getResources().getColor(R.color.white));
         bottomNavigationView = getActivity().findViewById(R.id.bottom_navigation);
+            BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottom_navigation);
+            NavigationView navigationView = getActivity().findViewById(R.id.Nav_view);
+
+            // Xóa trạng thái chọn mặc định
+            bottomNavigationView.setSelectedItemId(R.id.none);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
         boolean k = true;
             @Override
@@ -95,6 +101,7 @@ public class homeFragment extends Fragment {
                 if (itemId == R.id.hongcogihet) {
                     //openFragment(new BlankFragment());
                     // Tạo ra Bundle để đính kèm vào Fragment
+                    navigationView.setCheckedItem(R.id.none);
                     k=false;
                     Bundle bundle = new Bundle();
                     bundle.putParcelableArrayList("my_list", khoangCachLocationList);
@@ -118,11 +125,18 @@ public class homeFragment extends Fragment {
                     return true;
                 }
                 if (itemId == R.id.Users_nav) {
+                    navigationView.setCheckedItem(R.id.none);
                     openFragment(new UsersFragment());
                     return true;
                 }
                 else if (itemId == R.id.chat_nav) {
+                    navigationView.setCheckedItem(R.id.none);
                     openFragment(new ChatListFragment());
+                    return true;
+                }
+                else if (itemId == R.id.personal_post) {
+                    navigationView.setCheckedItem(R.id.none);
+                    openFragment(new PersonalPost());
                     return true;
                 }
                 return false;
