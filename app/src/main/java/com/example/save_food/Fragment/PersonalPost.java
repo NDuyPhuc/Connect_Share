@@ -38,7 +38,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class PersonalPost extends Fragment {
 
     private CircleImageView imgAvatar;
-    private TextView tvUserName;
+    private TextView tvUserName, tvNoPosts;
     private RecyclerView rvPosts;
     private ArrayList<ThongTin_UpLoadClass> postList;
     private PersonalPostAdapter adapter;
@@ -57,6 +57,7 @@ public class PersonalPost extends Fragment {
 
         imgAvatar = view.findViewById(R.id.imgAvatar);
         tvUserName = view.findViewById(R.id.tvUserName);
+        tvNoPosts = view.findViewById(R.id.tvNoPosts);
         rvPosts = view.findViewById(R.id.rvPosts);
 
         auth = FirebaseAuth.getInstance();
@@ -104,7 +105,6 @@ public class PersonalPost extends Fragment {
     }
 
     private void loadUserPosts(){
-        // Lắng nghe thay đổi tại nút ThongTin_UpLoad/{uid}
         postsRef.addValueEventListener(new ValueEventListener(){
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -126,19 +126,27 @@ public class PersonalPost extends Fragment {
                     postList.add(post);
                 }
                 adapter.notifyDataSetChanged();
+
+                // Nếu không có bài đăng, hiển thị TextView "Chưa có bài đăng của bạn"
+                if(postList.isEmpty()){
+                    tvNoPosts.setVisibility(View.VISIBLE);
+                    rvPosts.setVisibility(View.GONE);
+                } else {
+                    tvNoPosts.setVisibility(View.GONE);
+                    rvPosts.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) { }
         });
-
     }
 
     private void showEditPostDialog(final ThongTin_UpLoadClass post){
+        // Ví dụ dialog cập nhật tất cả các thông tin bài đăng
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Edit Post");
 
-        // Sử dụng LinearLayout để chứa nhiều EditText
         LinearLayout layout = new LinearLayout(getActivity());
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setPadding(16,16,16,16);
@@ -218,3 +226,4 @@ public class PersonalPost extends Fragment {
                 .create().show();
     }
 }
+

@@ -26,8 +26,8 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:src="@drawable/person"
-                app:civ_border_width="10dp"
-                app:civ_border_color="@color/white" />
+                app:civ_border_width="2dp"
+                app:civ_border_color="@android:color/white" />
 
             <TextView
                 android:id="@+id/tvUserName"
@@ -38,6 +38,17 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
         </LinearLayout>
+
+        <!-- TextView hiển thị khi không có bài đăng -->
+        <TextView
+            android:id="@+id/tvNoPosts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Chưa có bài đăng của bạn"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:visibility="gone"
+            android:padding="16dp" />
 
         <!-- RecyclerView hiển thị danh sách bài đăng nằm dưới header -->
         <androidx.recyclerview.widget.RecyclerView
