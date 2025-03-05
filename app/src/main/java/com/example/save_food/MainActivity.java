@@ -167,12 +167,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.hongcogihet:
+                        bottomNavigationView.setSelectedItemId(R.id.none);
                         openFragment(new BlankFragment());
                         return true;
                     case R.id.Users_nav:
+                        bottomNavigationView.setSelectedItemId(R.id.none);
                         openFragment(new UsersFragment());
                         return true;
                     case R.id.chat_nav:
+                        bottomNavigationView.setSelectedItemId(R.id.none);
                         openFragment(new ChatListFragment());
                         return true;
                 }
@@ -406,7 +409,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume() {
         super.onResume();
+        // Kiểm tra quyền và cập nhật lại vị trí khi quay lại ứng dụng
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // Sử dụng getCurrentLocation thay cho getLastLocation để lấy vị trí mới nhất
+            fusedLocationProviderClient.getCurrentLocation(
+                            com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY, null)
+                    .addOnSuccessListener(location -> {
+                        if (location != null) {
+                            currentLocation = location;
+                            Log.d(TAG, "Location updated in onResume: "
+                                    + location.getLatitude() + ", " + location.getLongitude());
+                        } else {
+                            Log.w(TAG, "No location available in onResume, requesting update");
+                            requestLocationUpdate();
+                        }
+                    });
+        } else {
+            // Nếu chưa có quyền, yêu cầu quyền
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    LOCATIONS);
+        }
     }
+
 
     private void updateToken(String token) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Tokens");
@@ -428,6 +454,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (itemId == R.id.nav_myprofile) {
             startActivity(new Intent(MainActivity.this, profileActivity.class));
         }else if (itemId == R.id.changepass) {
+            bottomNavigationView.setSelectedItemId(R.id.none);
             openFragment(new ChangePasswordFragment());
         }else if (itemId == R.id.report) {
             startActivity(new Intent(MainActivity.this, reportActivity.class));

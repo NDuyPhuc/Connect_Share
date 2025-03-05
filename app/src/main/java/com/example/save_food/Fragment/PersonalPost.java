@@ -29,9 +29,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -208,22 +211,84 @@ public class PersonalPost extends Fragment {
         builder.create().show();
     }
 
-    private void deletePost(final ThongTin_UpLoadClass post){
+    private void deletePost(final ThongTin_UpLoadClass post) {
         new AlertDialog.Builder(getActivity())
                 .setTitle("Delete Post")
                 .setMessage("Are you sure you want to delete this post?")
-                .setPositiveButton("Delete", (dialog, which) -> {
-                    postsRef.child(post.getPostId()).removeValue()
-                            .addOnCompleteListener(task -> {
-                                if(task.isSuccessful()){
-                                    Toast.makeText(getActivity(), "Post deleted", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(getActivity(), "Deletion failed", Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        postsRef.child(post.getPostId()).removeValue()
+                                .addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(getActivity(), "Post deleted", Toast.LENGTH_SHORT).show();
+                                        // Sau khi xóa thành công, gọi reorderPosts để cập nhật lại key
+                                        reorderPosts();
+                                    } else {
+                                        Toast.makeText(getActivity(), "Deletion failed", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
                 })
                 .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
                 .create().show();
     }
+    private void reorderPosts() {
+        // Lấy tham chiếu đến node bài đăng của người dùng
+        DatabaseReference userPostsRef = FirebaseDatabase.getInstance()
+                .getReference("ThongTin_UpLoad").child(currentUserId);
+
+        userPostsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // Sử dụng Map để giữ toàn bộ dữ liệu bài đăng (bao gồm cả node con như "Ảnh")
+                List<Map.Entry<Integer, Map<String, Object>>> postsList = new ArrayList<>();
+
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    Object value = ds.getValue();
+                    if (value instanceof Map) {
+                        Map<String, Object> postMap = (Map<String, Object>) value;
+                        try {
+                            int oldKey = Integer.parseInt(ds.getKey());
+                            postsList.add(new AbstractMap.SimpleEntry<>(oldKey, postMap));
+                        } catch (NumberFormatException e) {
+                            // Nếu key không phải là số, bỏ qua
+                        }
+                    }
+                }
+
+                // Sắp xếp theo thứ tự tăng dần của key cũ
+                Collections.sort(postsList, (o1, o2) -> Integer.compare(o1.getKey(), o2.getKey()));
+
+                // Tạo map cập nhật với key mới liên tục (1, 2, 3, ...)
+                int newKey = 1;
+                HashMap<String, Object> updates = new HashMap<>();
+                for (Map.Entry<Integer, Map<String, Object>> entry : postsList) {
+                    Map<String, Object> postMap = entry.getValue();
+                    // Nếu có trường postId trong dữ liệu, cập nhật lại (nếu cần)
+                    postMap.put("postId", String.valueOf(newKey));
+                    updates.put(String.valueOf(newKey), postMap);
+                    newKey++;
+                }
+
+                // Ghi đè toàn bộ node với dữ liệu mới (các bài đăng được giữ nguyên cấu trúc, bao gồm cả "Ảnh")
+                userPostsRef.setValue(updates)
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(getActivity(), "Reordered posts successfully", Toast.LENGTH_SHORT).show();
+                                loadUserPosts();
+                            } else {
+                                Toast.makeText(getActivity(), "Failed to reorder posts", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Xử lý lỗi nếu cần
+            }
+        });
+    }
+
 }
 
