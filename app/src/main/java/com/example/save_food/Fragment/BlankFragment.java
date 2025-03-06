@@ -95,7 +95,7 @@ public class BlankFragment extends Fragment {
             // Nếu có dữ liệu vị trí thì kiểm tra quyền truy cập vị trí.
             if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                     ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(getContext(), "Không có quyền truy cập vị trí. Hiển thị bài đăng ngẫu nhiên.", Toast.LENGTH_LONG).show();
+//                Toast.makeText(getContext(), "Không có quyền truy cập vị trí. Hiển thị bài đăng ngẫu nhiên.", Toast.LENGTH_LONG).show();
                 loadDataRandom();
             } else {
                 loadData();
@@ -118,7 +118,7 @@ public class BlankFragment extends Fragment {
                 loadData();
             } else {
                 // Nếu quyền không được cấp, hiển thị thông báo và tải bài đăng ngẫu nhiên
-                Toast.makeText(getContext(), "Không có quyền truy cập vị trí. Hiển thị bài đăng ngẫu nhiên.", Toast.LENGTH_LONG).show();
+//                Toast.makeText(getContext(), "Không có quyền truy cập vị trí. Hiển thị bài đăng ngẫu nhiên.", Toast.LENGTH_LONG).show();
                 loadDataRandom();
             }
         }

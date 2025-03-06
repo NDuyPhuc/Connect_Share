@@ -5,9 +5,11 @@ import static android.telephony.CellLocation.requestLocationUpdate;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -409,6 +411,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume() {
         super.onResume();
+        registerReceiver(locationSwitchStateReceiver, new IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION));
+
         // Kiểm tra quyền và cập nhật lại vị trí khi quay lại ứng dụng
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -433,6 +437,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(locationSwitchStateReceiver);
+    }
 
     private void updateToken(String token) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Tokens");
@@ -501,5 +510,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             finish();
         }
     }
+    // Khai báo BroadcastReceiver để lắng nghe thay đổi trạng thái vị trí
+    private BroadcastReceiver locationSwitchStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(LocationManager.PROVIDERS_CHANGED_ACTION)) {
+                LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+                if (locationManager != null) {
+                    boolean isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                    boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+                    // Nếu bất kỳ dịch vụ định vị nào được bật
+                    if (isGpsEnabled || isNetworkEnabled) {
+                        // Gọi hàm cập nhật vị trí
+                        getLastLocation();
+                    }
+                }
+            }
+        }
+    };
 
 }

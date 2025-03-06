@@ -470,7 +470,7 @@ public class homeFragment extends Fragment {
                             Toast.makeText(getActivity(), "Vị trí đã được bật, vui lòng đợi vài giây để loading...và truy cập lại", Toast.LENGTH_SHORT).show();
                         } else {
                             Log.w(TAG, "Unable to obtain new location update");
-                            Toast.makeText(getActivity(), "Vui lòng bật vị trí để sử dụng", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(getActivity(), "Vui lòng bật vị trí để sử dụng", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
