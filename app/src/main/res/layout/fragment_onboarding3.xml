@@ -10,7 +10,7 @@
 
     <TextView
         android:layout_width="wrap_content"
-        android:text="Let's save food together"
+        android:text="Let's Connect_Share together"
         android:layout_height="wrap_content"/>
     <View
         android:layout_width="114.47dp"

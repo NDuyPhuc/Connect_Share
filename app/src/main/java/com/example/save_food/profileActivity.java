@@ -12,10 +12,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -67,6 +70,13 @@ public class profileActivity extends AppCompatActivity {
     private static final int IMAGEPICK_GALLERY_REQUEST = 300;
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int IMAGE_PICKCAMERA_REQUEST = 400;
+    // Các biến lưu giá trị ban đầu (đã load từ Firebase)
+    private String originalName = "", originalEmail = "", originalPhone = "", originalCity = "", originalDistrict = "", originalWard = "", originalStreet = "", originalNotes = "";
+    private String originalAvatarURL = "";
+    // Biến lưu URL avatar mới nếu người dùng cập nhật (nếu chưa cập nhật thì null)
+    private String updatedAvatarURL = null;
+    // Cờ đánh dấu có thay đổi chưa lưu (được set bằng TextWatcher)
+    private boolean unsavedChanges = false;
 
     private  int storagePermisson = 1;
     String cameraPermission[];
@@ -75,6 +85,7 @@ public class profileActivity extends AppCompatActivity {
     String profileOrCoverPhoto;
     Button updateProfile;
     ActionBar actionBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +109,7 @@ public class profileActivity extends AppCompatActivity {
         pd.setMessageColor(getResources().getColor(R.color.white));
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
+        set = findViewById(R.id.img_avatar);
         firebaseDatabase = FirebaseDatabase.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
         databaseReference = firebaseDatabase.getReference("Users");
@@ -112,11 +124,27 @@ public class profileActivity extends AppCompatActivity {
                     String image = "" + dataSnapshot1.child("image").getValue();
                     String email = "" + dataSnapshot1.child("email").getValue();
                     String phone = "" + dataSnapshot1.child("phone").getValue();
+                    ((EditText) findViewById(R.id.name)).setText(strname);
+                    ((EditText) findViewById(R.id.user_email)).setText(email);
+                    ((EditText) findViewById(R.id.user_phone)).setText(phone);
 
+                    // Lưu giá trị ban đầu
+                    originalName = strname;
+                    originalEmail = email;
+                    originalPhone = phone;
+                    originalCity = "" + dataSnapshot1.child("city").getValue();
+                    originalDistrict = "" + dataSnapshot1.child("district").getValue();
+                    originalWard = "" + dataSnapshot1.child("ward").getValue();
+                    originalStreet = "" + dataSnapshot1.child("street").getValue();
+                    originalNotes = "" + dataSnapshot1.child("notes").getValue();
+                    ((EditText) findViewById(R.id.et_city)).setText(originalCity);
+                    ((EditText) findViewById(R.id.et_district)).setText(originalDistrict);
+                    ((EditText) findViewById(R.id.et_ward)).setText(originalWard);
+                    ((EditText) findViewById(R.id.et_street)).setText(originalStreet);
+                    ((EditText) findViewById(R.id.et_notes)).setText(originalNotes);
 
-                    editname.setText(strname);
-                    user_email.setText(email);
-                    user_phone.setText(phone);
+                    originalAvatarURL = image;
+
                     try {
                         if (!isDestroyed()) {
                             Glide.with(profileActivity.this).load(image).into(set);
@@ -127,7 +155,11 @@ public class profileActivity extends AppCompatActivity {
                         }
                     }
                 }
+                // Khi load dữ liệu thành công, chưa có thay đổi nào
+                unsavedChanges = false;
             }
+
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -145,35 +177,201 @@ public class profileActivity extends AppCompatActivity {
         updateProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showEditProfileDialog();
+                updateUserProfileData();
             }
         });
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkPermissions();
         }
-    }
-
-    private void showEditProfileDialog() {
-        String options[] = {"Chỉnh sửa ảnh", "Chỉnh sửa tên","Số điện thoại"};
-        AlertDialog.Builder b = new AlertDialog.Builder(this);
-        b.setTitle("Chọn sự thay đổi");
-        b.setItems(options, new DialogInterface.OnClickListener() {
+        // Khi ấn vào avatar, hiển thị dialog chọn nguồn ảnh
+        set.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                if (i == 0){
-                    pd.setMessage("Cập nhật ảnh đại diện");
-                    profileOrCoverPhoto = "image";
-                    showImagePicDialog();
-                } else if (i == 1){
-                    pd.setMessage("Cập nhật tên của bạn");
-                    showNamephoneupdate("name");
-                } else if (i == 2){
-                    pd.setMessage("Cập nhật số điện thoại của bạn");
-                    showNamephoneupdate("phone");}
+            public void onClick(View v) {
+                // Đánh dấu cập nhật ảnh profile (ở đây key là "image")
+                profileOrCoverPhoto = "image";
+                showImagePicDialog();
             }
         });
-        b.create().show();
+        setupTextWatchers();
+
     }
+
+    private void setupTextWatchers() {
+        int[] editTextIds = { R.id.name, R.id.user_email, R.id.user_phone, R.id.et_city, R.id.et_district, R.id.et_ward, R.id.et_street, R.id.et_notes };
+        for (int id : editTextIds) {
+            ((EditText) findViewById(id)).addTextChangedListener(new SimpleTextWatcher() {
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    unsavedChanges = true;
+                }
+            });
+        }
+    }
+    @Override
+    public boolean onSupportNavigateUp() {
+        if (hasUnsavedChanges()) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Bạn chưa lưu thông tin")
+                    .setMessage("Bạn có muốn lưu thay đổi trước khi thoát?")
+                    .setPositiveButton("Lưu", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            updateUserProfileDataAndFinish();
+                        }
+                    })
+                    .setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Nếu "Hủy" thì nếu avatar đã thay đổi, revert lại avatar gốc
+                            revertAvatarIfChanged();
+                            unsavedChanges = false;
+                            finish();
+                        }
+                    })
+                    .show();
+        } else {
+            super.onBackPressed();
+        }
+        return super.onSupportNavigateUp();
+    }
+
+    private boolean hasUnsavedChanges() {
+        EditText etName = findViewById(R.id.name);
+        EditText etEmail = findViewById(R.id.user_email);
+        EditText etPhone = findViewById(R.id.user_phone);
+        EditText etCity = findViewById(R.id.et_city);
+        EditText etDistrict = findViewById(R.id.et_district);
+        EditText etWard = findViewById(R.id.et_ward);
+        EditText etStreet = findViewById(R.id.et_street);
+        EditText etNotes = findViewById(R.id.et_notes);
+
+        boolean changed = false;
+        if (!etName.getText().toString().trim().equals(originalName)) changed = true;
+        if (!etEmail.getText().toString().trim().equals(originalEmail)) changed = true;
+        if (!etPhone.getText().toString().trim().equals(originalPhone)) changed = true;
+        if (!etCity.getText().toString().trim().equals(originalCity)) changed = true;
+        if (!etDistrict.getText().toString().trim().equals(originalDistrict)) changed = true;
+        if (!etWard.getText().toString().trim().equals(originalWard)) changed = true;
+        if (!etStreet.getText().toString().trim().equals(originalStreet)) changed = true;
+        if (!etNotes.getText().toString().trim().equals(originalNotes)) changed = true;
+        // Kiểm tra avatar: nếu updatedAvatarURL đã được cập nhật và khác với originalAvatarURL
+        if (updatedAvatarURL != null && !updatedAvatarURL.equals(originalAvatarURL)) changed = true;
+        return changed;
+    }
+
+
+    public abstract class SimpleTextWatcher implements TextWatcher {
+        @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+        @Override public void afterTextChanged(Editable s) {}
+    }
+
+    private void showImagePicDialog() {
+        String options[] = {"Chụp ảnh", "Ảnh từ thư viện"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Chọn nguồn ảnh");
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (which == 0) {
+                    // Lựa chọn "Chụp ảnh"
+                    checkCameraPermission();
+                } else if (which == 1) {
+                    // Lựa chọn "Ảnh từ thư viện"
+                    pickFromGallery();
+                }
+            }
+        });
+        builder.create().show();
+    }
+
+    private void checkCameraPermission() {
+        // Kiểm tra quyền CAMERA và WRITE_EXTERNAL_STORAGE
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            // Nếu chưa cấp quyền, yêu cầu cấp quyền
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    CAMERA_REQUEST);
+        } else {
+            // Nếu quyền đã được cấp, gọi hàm pickFromCamera() để chụp ảnh
+            pickFromCamera();
+        }
+    }
+
+
+    private void updateUserProfileData() {
+        // Lấy dữ liệu từ các EditText (lưu ý: trong layout activity_profile.xml bạn đã chuyển các TextView thành EditText)
+        String strName = ((EditText) findViewById(R.id.name)).getText().toString().trim();
+        String strEmail = ((EditText) findViewById(R.id.user_email)).getText().toString().trim();
+        String strPhone = ((EditText) findViewById(R.id.user_phone)).getText().toString().trim();
+        String strCity = ((EditText) findViewById(R.id.et_city)).getText().toString().trim();
+        String strDistrict = ((EditText) findViewById(R.id.et_district)).getText().toString().trim();
+        String strWard = ((EditText) findViewById(R.id.et_ward)).getText().toString().trim();
+        String strStreet = ((EditText) findViewById(R.id.et_street)).getText().toString().trim();
+        String strNotes = ((EditText) findViewById(R.id.et_notes)).getText().toString().trim();
+
+        // Kiểm tra bắt buộc nếu cần (ví dụ: tên không được để trống)
+        if (TextUtils.isEmpty(strName)) {
+            Toast.makeText(profileActivity.this, "Hãy nhập tên", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        // Nếu cần bạn có thể kiểm tra các trường khác...
+
+        // Tạo HashMap chứa dữ liệu cần cập nhật
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("name", strName);
+        hashMap.put("email", strEmail);
+        hashMap.put("phone", strPhone);
+        hashMap.put("city", strCity);
+        hashMap.put("district", strDistrict);
+        hashMap.put("ward", strWard);
+        hashMap.put("street", strStreet);
+        hashMap.put("notes", strNotes);
+
+        // Hiển thị progress dialog
+        pd.show();
+
+        // Cập nhật dữ liệu vào node "Users" với key là uid của người dùng hiện tại
+        databaseReference.child(firebaseUser.getUid())
+                .updateChildren(hashMap)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        pd.dismiss();
+                        Toast.makeText(profileActivity.this, "Cập nhật thông tin thành công", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        pd.dismiss();
+                        Toast.makeText(profileActivity.this, "Lỗi cập nhật: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    //    private void showEditProfileDialog() {
+//        String options[] = {"Chỉnh sửa ảnh", "Chỉnh sửa tên","Số điện thoại"};
+//        AlertDialog.Builder b = new AlertDialog.Builder(this);
+//        b.setTitle("Chọn sự thay đổi");
+//        b.setItems(options, new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialogInterface, int i) {
+//                if (i == 0){
+//                    pd.setMessage("Cập nhật ảnh đại diện");
+//                    profileOrCoverPhoto = "image";
+//                    showImagePicDialog();
+//                } else if (i == 1){
+//                    pd.setMessage("Cập nhật tên của bạn");
+//                    showNamephoneupdate("name");
+//                } else if (i == 2){
+//                    pd.setMessage("Cập nhật số điện thoại của bạn");
+//                    showNamephoneupdate("phone");}
+//            }
+//        });
+//        b.create().show();
+//    }
     private void checkPermissions(){
 
         if (ContextCompat.checkSelfPermission(this,
@@ -195,10 +393,106 @@ public class profileActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return super.onSupportNavigateUp();
+    public void onBackPressed() {
+        if (hasUnsavedChanges()) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Bạn chưa lưu thông tin")
+                    .setMessage("Bạn có muốn lưu thay đổi trước khi thoát?")
+                    .setPositiveButton("Lưu", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            updateUserProfileDataAndFinish();
+                        }
+                    })
+                    .setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Nếu "Hủy" thì nếu avatar đã thay đổi, revert lại avatar gốc
+                            revertAvatarIfChanged();
+                            unsavedChanges = false;
+                            finish();
+                        }
+                    })
+                    .show();
+        } else {
+            super.onBackPressed();
+        }
     }
+
+    private void updateUserProfileDataAndFinish() {
+        // Lấy dữ liệu từ các EditText
+        String strName = ((EditText) findViewById(R.id.name)).getText().toString().trim();
+        String strEmail = ((EditText) findViewById(R.id.user_email)).getText().toString().trim();
+        String strPhone = ((EditText) findViewById(R.id.user_phone)).getText().toString().trim();
+        String strCity = ((EditText) findViewById(R.id.et_city)).getText().toString().trim();
+        String strDistrict = ((EditText) findViewById(R.id.et_district)).getText().toString().trim();
+        String strWard = ((EditText) findViewById(R.id.et_ward)).getText().toString().trim();
+        String strStreet = ((EditText) findViewById(R.id.et_street)).getText().toString().trim();
+        String strNotes = ((EditText) findViewById(R.id.et_notes)).getText().toString().trim();
+
+        if (TextUtils.isEmpty(strName)) {
+            Toast.makeText(profileActivity.this, "Hãy nhập tên", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("name", strName);
+        hashMap.put("email", strEmail);
+        hashMap.put("phone", strPhone);
+        hashMap.put("city", strCity);
+        hashMap.put("district", strDistrict);
+        hashMap.put("ward", strWard);
+        hashMap.put("street", strStreet);
+        hashMap.put("notes", strNotes);
+
+        pd.show();
+        databaseReference.child(firebaseUser.getUid())
+                .updateChildren(hashMap)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        pd.dismiss();
+                        Toast.makeText(profileActivity.this, "Cập nhật thông tin thành công", Toast.LENGTH_SHORT).show();
+                        unsavedChanges = false;
+                        finish();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        pd.dismiss();
+                        Toast.makeText(profileActivity.this, "Lỗi cập nhật: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void revertAvatarIfChanged() {
+        if (updatedAvatarURL != null && !updatedAvatarURL.equals(originalAvatarURL)) {
+            HashMap<String, Object> revertMap = new HashMap<>();
+            revertMap.put("image", originalAvatarURL);
+            databaseReference.child(firebaseUser.getUid()).updateChildren(revertMap)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // Cập nhật lại giao diện avatar về giá trị ban đầu
+                            Glide.with(profileActivity.this)
+                                    .load(originalAvatarURL)
+                                    .placeholder(R.drawable.person)
+                                    .into(set);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Nếu revert thất bại, có thể hiển thị Toast
+                            Toast.makeText(profileActivity.this, "Lỗi hoàn nguyên ảnh: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+    }
+
+
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -210,11 +504,10 @@ public class profileActivity extends AppCompatActivity {
 
                     String image = "" + dataSnapshot1.child("image").getValue();
 
-                    try {
+                    if (!profileActivity.this.isFinishing() && !profileActivity.this.isDestroyed()) {
                         Glide.with(profileActivity.this).load(image).into(set);
-                    } catch (Exception e) {
-                        Glide.with(profileActivity.this).load(R.drawable.person).into(set);
                     }
+
 
                 }
             }
@@ -247,11 +540,10 @@ public class profileActivity extends AppCompatActivity {
 
                     String image = "" + dataSnapshot1.child("image").getValue();
 
-                    try {
-                        Glide.with(profileActivity.this).load(image).placeholder(R.drawable.person).into(set);
-                    } catch (Exception e) {
-                        Glide.with(profileActivity.this).load(R.drawable.person).into(set);
+                    if (!profileActivity.this.isFinishing() && !profileActivity.this.isDestroyed()) {
+                        Glide.with(profileActivity.this).load(image).into(set);
                     }
+
 
                 }
             }
@@ -319,45 +611,14 @@ public class profileActivity extends AppCompatActivity {
 
 
 
-
-    // Here we are showing image pic dialog where we will select
-    // and image either from camera or gallery
-    private void showImagePicDialog() {
-        String options[] = {"Camera", "Gallery"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Pick Image From");
-        builder.setItems(options, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // if access is not given then we will request for permission
-                if (which == 0) {
-                    checkCameraPermission();
-                } else if (which == 1) {
-
-                    pickFromGallery();
-
-                }
-            }
-        });
-        builder.create().show();
-    }
-
-    private void checkCameraPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST);
-        } else {
-            pickFromCamera();
-            // Permission already granted
-            // Perform required camera-related operations here
-        }
-    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == PICK_IMAGE_REQUEST) {
-                assert data != null;
-                imageuri = data.getData();
-                uploadProfileCoverPhoto(imageuri);
+                if (data != null) {
+                    imageuri = data.getData();
+                    uploadProfileCoverPhoto(imageuri);
+                }
             }
             if (requestCode == IMAGE_PICKCAMERA_REQUEST) {
                 uploadProfileCoverPhoto(imageuri);
@@ -365,6 +626,7 @@ public class profileActivity extends AppCompatActivity {
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -423,50 +685,53 @@ public class profileActivity extends AppCompatActivity {
         startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST);
     }
 
-    // We will upload the image from here.
     private void uploadProfileCoverPhoto(final Uri uri) {
         pd.show();
-
-        // We are taking the filepath as storagepath + firebaseauth.getUid()+".png"
-        String filepathname = storagepath + "" + profileOrCoverPhoto + "_" + firebaseUser.getUid();
+        String filepathname = storagepath + profileOrCoverPhoto + "_" + firebaseUser.getUid();
         StorageReference storageReference1 = storageReference.child(filepathname);
         storageReference1.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
-                while (!uriTask.isSuccessful()) ;
-
-                // We will get the url of our image using uritask
+                while (!uriTask.isSuccessful());
                 final Uri downloadUri = uriTask.getResult();
                 if (uriTask.isSuccessful()) {
-
-                    // updating our image url into the realtime database
+                    // Cập nhật URL ảnh vào Firebase Database (key "image")
                     HashMap<String, Object> hashMap = new HashMap<>();
                     hashMap.put(profileOrCoverPhoto, downloadUri.toString());
-                    databaseReference.child(firebaseUser.getUid()).updateChildren(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            pd.dismiss();
-                            Toast.makeText(profileActivity.this, "Updated", Toast.LENGTH_LONG).show();
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            pd.dismiss();
-                            Toast.makeText(profileActivity.this, "Error Updating ", Toast.LENGTH_LONG).show();
-                        }
-                    });
+                    databaseReference.child(firebaseUser.getUid()).updateChildren(hashMap)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    pd.dismiss();
+                                    Toast.makeText(profileActivity.this, "Cập nhật ảnh thành công", Toast.LENGTH_LONG).show();
+                                    // Lưu URL mới vào biến updatedAvatarURL
+                                    updatedAvatarURL = downloadUri.toString();
+                                    // Load ảnh mới cập nhật lên avatar
+                                    Glide.with(profileActivity.this)
+                                            .load(downloadUri.toString())
+                                            .placeholder(R.drawable.person)
+                                            .into(set);
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    pd.dismiss();
+                                    Toast.makeText(profileActivity.this, "Lỗi cập nhật ảnh: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            });
                 } else {
                     pd.dismiss();
-                    Toast.makeText(profileActivity.this, "Error", Toast.LENGTH_LONG).show();
+                    Toast.makeText(profileActivity.this, "Lỗi tải ảnh", Toast.LENGTH_LONG).show();
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 pd.dismiss();
-                Toast.makeText(profileActivity.this, "Error", Toast.LENGTH_LONG).show();
+                Toast.makeText(profileActivity.this, "Lỗi upload: " + e.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
+
 }

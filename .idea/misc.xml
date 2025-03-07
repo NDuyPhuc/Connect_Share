@@ -3,14 +3,18 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/ConnectShare-main/app/src/main/res/drawable/bg_table_product.xml" value="0.1" />
+        <entry key="..\:/ConnectShare-main/app/src/main/res/drawable/bg_textview_button.xml" value="0.156" />
+        <entry key="..\:/ConnectShare-main/app/src/main/res/drawable/bg_textview_sent.xml" value="0.156" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/drawable/gradient_map.xml" value="0.197" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/activity_chat.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/activity_forget_password.xml" value="0.17481884057971014" />
+        <entry key="..\:/ConnectShare-main/app/src/main/res/layout/activity_form.xml" value="0.22" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/activity_login.xml" value="0.20416666666666666" />
-        <entry key="..\:/ConnectShare-main/app/src/main/res/layout/activity_main.xml" value="0.367911479944675" />
+        <entry key="..\:/ConnectShare-main/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/activity_maps.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/activity_onboarding.xml" value="0.20416666666666666" />
-        <entry key="..\:/ConnectShare-main/app/src/main/res/layout/activity_profile.xml" value="0.20416666666666666" />
+        <entry key="..\:/ConnectShare-main/app/src/main/res/layout/activity_profile.xml" value="0.2" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/activity_register.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/activity_report.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/activity_splash.xml" value="0.20416666666666666" />
@@ -27,7 +31,7 @@
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/fragment_home.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/fragment_onboarding1.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/fragment_onboarding2.xml" value="0.20416666666666666" />
-        <entry key="..\:/ConnectShare-main/app/src/main/res/layout/fragment_onboarding3.xml" value="0.20416666666666666" />
+        <entry key="..\:/ConnectShare-main/app/src/main/res/layout/fragment_onboarding3.xml" value="0.33" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/fragment_personal_post.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/fragment_users.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/item_personal_post.xml" value="0.25" />
@@ -38,7 +42,7 @@
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/row_chat_right.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/row_chatlist.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/row_users.xml" value="0.20416666666666666" />
-        <entry key="..\:/ConnectShare-main/app/src/main/res/layout/viewpager_item.xml" value="0.20416666666666666" />
+        <entry key="..\:/ConnectShare-main/app/src/main/res/layout/viewpager_item.xml" value="0.25" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/menu/category_item.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/menu/menu_nav.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/menu/menu_nav2.xml" value="0.20416666666666666" />

@@ -3,6 +3,7 @@ package com.example.save_food.adapter;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.save_food.Activity_Form;
 import com.example.save_food.R;
 import com.example.save_food.chat;
 import com.google.firebase.auth.FirebaseAuth;
@@ -53,11 +55,55 @@ public class VPAdapter extends RecyclerView.Adapter<VPAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         ViewPagerItem viewPagerItem = viewPagerItems.get(position);
         Picasso.get().load(viewPagerItem.getImgaeId()).into(holder.imageView);
-        String pUid = viewPagerItems.get(position).getUid();
-        holder.tvHeading.setText(viewPagerItem.Heding);
+
+        // Xử lý hiển thị text chỉ 2 từ cho tvHeading
+        String originalText = viewPagerItem.Heding;
+        String[] words = originalText.split("\\s+");
+        if (words.length > 2) {
+            // Nếu nhiều hơn 2 từ, chỉ hiển thị 2 từ đầu tiên và thêm dấu "..."
+            String truncatedText = words[0] + " " + words[1] + "...";
+            holder.tvHeading.setText(truncatedText);
+        } else {
+            holder.tvHeading.setText(originalText);
+        }
+
         holder.tvHeading2.setText(viewPagerItem.Heding2);
 
-//        notifyDataSetChanged();
+        // Xử lý sự kiện cho tvNhan
+        holder.tvNhan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("Chọn phương thức nhập thông tin");
+
+                String[] options = {"Tự nhập thông tin", "Nhập thông tin có sẵn"};
+
+                builder.setItems(options, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(context, Activity_Form.class);
+                        // Truyền extra để chỉ định chế độ hiển thị thông tin (tự nhập hay có sẵn)
+                        if (which == 0) {
+                            intent.putExtra("info_option", "empty");
+                        } else {
+                            intent.putExtra("info_option", "preset");
+                        }
+                        // Truyền thông tin sản phẩm từ bài đăng (thông tin này lấy từ đối tượng viewPagerItem)
+                        intent.putExtra("product_name", viewPagerItem.getHeding());        // Tên sản phẩm
+                        intent.putExtra("product_info", viewPagerItem.getHeding2());      // Thông tin sản phẩm (ví dụ địa chỉ)
+                        intent.putExtra("product_image", viewPagerItem.getImgaeId());    // URL hình ảnh sản phẩm
+                        intent.putExtra("UID_personal", viewPagerItem.getUid());    // UID người đăng bài
+                        context.startActivity(intent);
+                    }
+                });
+                builder.show();
+            }
+        });
+
+
+
+
+        // Xử lý sự kiện cho button "Xem thêm"
         holder.xemthemBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -68,12 +114,9 @@ public class VPAdapter extends RecyclerView.Adapter<VPAdapter.ViewHolder> {
                 String hisUid = viewPagerItems.get(position).getUid();
                 AlertDialog.Builder builder = new AlertDialog.Builder(v.getRootView().getContext());
                 View dialogView = LayoutInflater.from(v.getRootView().getContext()).inflate(R.layout.custom_dialog_post, null);
-                ImageView imageViewDialog;
-                TextView TendonHangDialog;
-                TextView DiachiDialog;
-                imageViewDialog = dialogView.findViewById(R.id.dialog_post_img);
-                TendonHangDialog = dialogView.findViewById(R.id.NamDonHangPostDialog);
-                DiachiDialog = dialogView.findViewById(R.id.DiaChiPostDiaLog);
+                ImageView imageViewDialog = dialogView.findViewById(R.id.dialog_post_img);
+                TextView TendonHangDialog = dialogView.findViewById(R.id.NamDonHangPostDialog);
+                TextView DiachiDialog = dialogView.findViewById(R.id.DiaChiPostDiaLog);
                 Glide.with(context).load(viewPagerItem.getImgaeId()).into(imageViewDialog);
                 TendonHangDialog.setText(tendonhang);
                 DiachiDialog.setText(Diachi);
@@ -110,11 +153,11 @@ public class VPAdapter extends RecyclerView.Adapter<VPAdapter.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         ImageView imageView;
-        TextView tvHeading, tvHeading2, plikeTv;
+        TextView tvHeading, tvHeading2, plikeTv, tvNhan;
         Button xemthemBtn;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
+            tvNhan  = itemView.findViewById(R.id.tv_nhan);
             imageView = itemView.findViewById(R.id.img_viewpager);
             tvHeading = itemView.findViewById(R.id.tvHeading);
             tvHeading2= itemView.findViewById(R.id.tv_Heading2);

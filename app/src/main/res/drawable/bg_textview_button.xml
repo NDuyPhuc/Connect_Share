@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Bóng đổ -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="8dp"/>
+            <solid android:color="@android:color/transparent"/>
+        </shape>
+    </item>
+
+    <!-- Nền và viền của nút -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="8dp"/>
+            <solid android:color="@color/cardview_shadow_end_color"/>
+            <stroke android:width="2dp" android:color="#000000"/>
+        </shape>
+    </item>
+</layer-list>
