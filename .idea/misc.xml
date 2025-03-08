@@ -10,6 +10,7 @@
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/activity_chat.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/activity_forget_password.xml" value="0.17481884057971014" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/activity_form.xml" value="0.22" />
+        <entry key="..\:/ConnectShare-main/app/src/main/res/layout/activity_form_view.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/activity_login.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/activity_maps.xml" value="0.20416666666666666" />
@@ -39,6 +40,8 @@
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/layout_header_nav_his.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/layout_progress_dialog.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/row_chat_left.xml" value="0.20416666666666666" />
+        <entry key="..\:/ConnectShare-main/app/src/main/res/layout/row_chat_product.xml" value="0.25" />
+        <entry key="..\:/ConnectShare-main/app/src/main/res/layout/row_chat_product_right.xml" value="0.18" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/row_chat_right.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/row_chatlist.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/row_users.xml" value="0.20416666666666666" />

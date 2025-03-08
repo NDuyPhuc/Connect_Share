@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollViewFormView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:id="@+id/llFormContainerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Tiêu đề thông tin cá nhân -->
+        <TextView
+            android:id="@+id/tv_profile_header_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Thông tin cá nhân"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Hiển thị thông tin cá nhân (chỉ đọc) -->
+        <TextView
+            android:id="@+id/tv_fullname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Họ và tên: "
+            android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:id="@+id/tv_phonenumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Số điện thoại: "
+            android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:id="@+id/tv_city"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Thành phố: "
+            android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:id="@+id/tv_district"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Quận/Huyện: "
+            android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:id="@+id/tv_ward"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Xã/Thị trấn: "
+            android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:id="@+id/tv_street"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Đường/Số nhà: "
+            android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:id="@+id/tv_notes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ghi chú: "
+            android:layout_marginBottom="24dp" />
+
+        <!-- Phần hiển thị thông tin sản phẩm -->
+        <TextView
+            android:id="@+id/tv_product_header_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Thông tin sản phẩm"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_marginBottom="8dp" />
+
+        <TableLayout
+            android:id="@+id/table_product_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="1"
+            android:background="@drawable/bg_table_product"
+            android:padding="8dp"
+            android:layout_marginBottom="24dp">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp">
+
+                <!-- Hình ảnh sản phẩm -->
+                <ImageView
+                    android:id="@+id/iv_product_view"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/a"
+                    android:scaleType="centerCrop"
+                    android:layout_marginEnd="8dp" />
+
+                <!-- Thông tin sản phẩm (chỉ đọc) -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tv_product_name_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tên sản phẩm: "
+                        android:textStyle="bold"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tv_product_info_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Thông tin chi tiết sản phẩm: "
+                        android:textSize="14sp"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+            </TableRow>
+
+        </TableLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Vui lòng kiểm tra mọi thông tin trước khi gửi!"
+            android:textStyle="italic"
+            android:textSize="15sp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Nút "Quay lại" để thoát chế độ xem chi tiết -->
+        <LinearLayout
+            android:id="@+id/llButtons_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/btn_back_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Quay lại" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

@@ -79,16 +79,13 @@ public class ChatListFragment extends Fragment {
                     if (!modelChatList.getId().equals(firebaseUser.getUid())) {
                         chatListList.add(modelChatList);
                     }
-
                 }
                 loadChats();
             }
-
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
+
         return view;
 
     }
@@ -144,28 +141,40 @@ public class ChatListFragment extends Fragment {
                     if (sender == null || receiver == null) {
                         continue;
                     }
-                    // checking for the type of message if
-                    // message type is image then set
-                    // last message as sent a photo
-                    if (chat.getReceiver().equals(firebaseUser.getUid()) &&
-                            chat.getSender().equals(uid) ||
-                            chat.getReceiver().equals(uid) &&
-                                    chat.getSender().equals(firebaseUser.getUid())) {
+                    // Sử dụng ngoặc để rõ ràng hơn
+                    if ((chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(uid))
+                            || (chat.getReceiver().equals(uid) && chat.getSender().equals(firebaseUser.getUid()))) {
                         if (chat.getType().equals("images")) {
                             lastmess = "Đã gửi ảnh";
+                        } else if (chat.getType().equals("product")) {
+                            lastmess = "Thông tin sản phẩm";
                         } else {
                             lastmess = chat.getMessage();
                         }
                     }
+
                 }
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    ModelChatList modelChatList = ds.getValue(ModelChatList.class);
+                    if (modelChatList == null || modelChatList.getId() == null || modelChatList.getId().trim().isEmpty()) {
+                        continue; // Bỏ qua nếu dữ liệu không hợp lệ
+                    }
+                    // Nếu key chứa ký tự không hợp lệ, bạn có thể log và bỏ qua
+                    if (modelChatList.getId().contains(".") || modelChatList.getId().contains("#")
+                            || modelChatList.getId().contains("$") || modelChatList.getId().contains("[")
+                            || modelChatList.getId().contains("]")) {
+                        continue;
+                    }
+                    if (!modelChatList.getId().equals(firebaseUser.getUid())) {
+                        chatListList.add(modelChatList);
+                    }
+                }
+
                 adapterChatList.setlastMessageMap(uid, lastmess);
                 adapterChatList.notifyDataSetChanged();
             }
-
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
     }
 
