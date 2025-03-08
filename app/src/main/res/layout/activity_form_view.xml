@@ -17,7 +17,7 @@
             android:id="@+id/tv_profile_header_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Thông tin cá nhân"
+            android:text="Thông tin cá nhân của người nhận"
             android:textStyle="bold"
             android:textSize="18sp"
             android:layout_marginBottom="8dp" />
@@ -77,67 +77,72 @@
             android:id="@+id/tv_product_header_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Thông tin sản phẩm"
+            android:text="Thông tin sản phẩm muốn nhận"
             android:textStyle="bold"
             android:textSize="18sp"
             android:layout_marginBottom="8dp" />
 
-        <TableLayout
-            android:id="@+id/table_product_view"
+        <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:stretchColumns="1"
-            android:background="@drawable/bg_table_product"
-            android:padding="8dp"
-            android:layout_marginBottom="24dp">
+            android:fillViewport="true"
+            android:scrollbars="none">
 
-            <TableRow
-                android:layout_width="match_parent"
+            <TableLayout
+                android:id="@+id/table_product_view"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="4dp">
+                android:stretchColumns="1"
+                android:background="@drawable/bg_table_product"
+                android:padding="8dp"
+                android:layout_marginBottom="24dp">
 
-                <!-- Hình ảnh sản phẩm -->
-                <ImageView
-                    android:id="@+id/iv_product_view"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/a"
-                    android:scaleType="centerCrop"
-                    android:layout_marginEnd="8dp" />
-
-                <!-- Thông tin sản phẩm (chỉ đọc) -->
-                <LinearLayout
-                    android:layout_width="wrap_content"
+                <TableRow
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:padding="4dp">
 
-                    <TextView
-                        android:id="@+id/tv_product_name_view"
+                    <!-- Hình ảnh sản phẩm -->
+                    <ImageView
+                        android:id="@+id/iv_product_view"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/a"
+                        android:scaleType="centerCrop"
+                        android:layout_marginEnd="8dp" />
+
+                    <!-- Thông tin sản phẩm (chỉ đọc) -->
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Tên sản phẩm: "
-                        android:textStyle="bold"
-                        android:textSize="16sp" />
+                        android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/tv_product_info_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Thông tin chi tiết sản phẩm: "
-                        android:textSize="14sp"
-                        android:layout_marginTop="4dp" />
-                </LinearLayout>
-            </TableRow>
+                        <TextView
+                            android:id="@+id/tv_product_name_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tên sản phẩm: "
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:singleLine="false"
+                            android:ellipsize="none" />
 
-        </TableLayout>
+                        <TextView
+                            android:id="@+id/tv_product_info_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Thông tin chi tiết sản phẩm: "
+                            android:textSize="14sp"
+                            android:layout_marginTop="4dp"
+                            android:singleLine="false"
+                            android:ellipsize="none" />
+                    </LinearLayout>
+                </TableRow>
+            </TableLayout>
+        </HorizontalScrollView>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Vui lòng kiểm tra mọi thông tin trước khi gửi!"
-            android:textStyle="italic"
-            android:textSize="15sp"
-            android:layout_marginBottom="8dp" />
+
+
 
         <!-- Nút "Quay lại" để thoát chế độ xem chi tiết -->
         <LinearLayout

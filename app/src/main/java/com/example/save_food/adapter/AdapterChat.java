@@ -116,6 +116,8 @@ public class AdapterChat extends RecyclerView.Adapter<AdapterChat.Myholder> {
                         intent.putExtra("productName", prodName);
                         intent.putExtra("productInfo", prodInfo);
                         intent.putExtra("productImage", prodImage);
+                        intent.putExtra("UID_sender", modelChat.getSender());
+
                         context.startActivity(intent);
                     });
 

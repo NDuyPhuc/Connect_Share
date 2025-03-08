@@ -1,30 +1,22 @@
 package com.example.save_food.models;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
+@IgnoreExtraProperties
 public class ModelUser {
-    String name, email, search, image, uid, onlineStatus,typingTo;
-
-
-    public ModelUser() {
-        //Empty constructor required by Firebase
-    }
-
-    public ModelUser(String name, String email, String search, String image, String uid,String onlineStatus,String typingTo){
-        this.name = name;
-        this.email = email;
-        this.search = search;
-        this.image = image;
-        this.uid = uid;
-        this.onlineStatus = onlineStatus;
-        this.typingTo = typingTo;
-    }
-
-    public String getTypingTo() {
-        return typingTo;
-    }
-
-    public void setTypingTo(String typingTo) {
-        this.typingTo = typingTo;
-    }
+    private String uid;
+    private String name;
+    private String image;
+    private String phone;
+    private String city;
+    private String district;
+    private String ward;
+    private String street;
+    private String notes;
+    private double latitude;
+    private double longitude;
+    private String onlineStatus;
+    private String email;
 
     public String getOnlineStatus() {
         return onlineStatus;
@@ -33,39 +25,105 @@ public class ModelUser {
     public void setOnlineStatus(String onlineStatus) {
         this.onlineStatus = onlineStatus;
     }
-
-    public String getName(){
-        return name;
-    }
-    public void setName(String name){
-        this.name = name;
-    }
-
-    public String getEmail(){
+    public String getEmail() {
         return email;
     }
-    public void setEmail(String email){
+
+    public void setEmail(String email) {
         this.email = email;
     }
 
+    public ModelUser() {
+        // Required empty constructor for Firebase object mapping
+    }
 
-    public String getImage(){
+    // Getters & Setters
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getImage() {
         return image;
     }
-    public void setImage(String image){
+
+    public void setImage(String image) {
         this.image = image;
     }
 
-    public String getSearch(){
-        return search;
+    public String getPhone() {
+        return phone;
     }
-    public void setSearch(String search){
-        this.search = search;
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
-    public String getUid(){
-        return uid;
+
+    public String getCity() {
+        return city;
     }
-    public void setUid(String uid){
-        this.uid = uid;
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+
+    public String getWard() {
+        return ward;
+    }
+
+    public void setWard(String ward) {
+        this.ward = ward;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }

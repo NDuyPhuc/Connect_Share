@@ -43,6 +43,15 @@ public class Activity_Form extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_form);
 
+        // Khởi tạo Firebase Auth và lấy người dùng hiện tại ngay lập tức
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        if (firebaseUser == null) {
+            Toast.makeText(this, "Người dùng chưa đăng nhập", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         // Ánh xạ các view thông tin cá nhân
         etFullname = findViewById(R.id.et_fullname);
         etPhone = findViewById(R.id.phonenumber);
@@ -57,6 +66,7 @@ public class Activity_Form extends AppCompatActivity {
         tvProductInfo = findViewById(R.id.tv_product_info);
         quay_lai = findViewById(R.id.btn_back);
         gui_sp = findViewById(R.id.btn_submit);
+
         // Lấy extra từ Intent
         String infoOption = getIntent().getStringExtra("info_option");
         String productName = getIntent().getStringExtra("product_name");
@@ -76,8 +86,7 @@ public class Activity_Form extends AppCompatActivity {
                     .into(ivProduct);
         }
 
-        // Nếu người dùng chọn "preset" thì load thông tin từ Firebase
-        // Nếu chọn "empty" thì để các EditText trống
+        // Nếu người dùng chọn "preset" thì load thông tin từ Firebase, còn nếu "empty" thì để trống
         if ("preset".equals(infoOption)) {
             loadUserDataFromFirebase();
         } else {
@@ -89,16 +98,11 @@ public class Activity_Form extends AppCompatActivity {
             etStreet.setText("");
             etNotes.setText("");
         }
-        quay_lai.setOnClickListener(view -> {
-            onBackPressed();
-        });
-        gui_sp.setOnClickListener(view -> {
-            sendProductMessage(receiverUid);
 
-        });
-        // Khởi tạo Firebase Auth và Database reference
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseUser = firebaseAuth.getCurrentUser();
+        quay_lai.setOnClickListener(view -> onBackPressed());
+        gui_sp.setOnClickListener(view -> sendProductMessage(receiverUid));
+
+        // Khởi tạo DatabaseReference và chatRef
         databaseReference = FirebaseDatabase.getInstance().getReference("Users");
         chatRef = FirebaseDatabase.getInstance().getReference("Chats");
     }
@@ -108,7 +112,7 @@ public class Activity_Form extends AppCompatActivity {
             Toast.makeText(this, "Không có thông tin người nhận", Toast.LENGTH_SHORT).show();
             return;
         }
-        String senderUid = firebaseUser.getUid();
+        String senderUid = firebaseUser.getUid(); // UID của người gửi
         long timestamp = System.currentTimeMillis();
 
         // Tạo đối tượng JSON chứa thông tin sản phẩm
@@ -136,8 +140,7 @@ public class Activity_Form extends AppCompatActivity {
                     // Cập nhật ChatList cho cả 2 bên
                     updateChatList(receiverUid);
                     Toast.makeText(Activity_Form.this, "Đã gửi thông tin sản phẩm", Toast.LENGTH_SHORT).show();
-
-                    // Mở Activity_Form_View và truyền tất cả thông tin của người gửi
+                    // Truyền UID của người gửi sang Activity_Form_View
                     Intent intent = new Intent(Activity_Form.this, activity_form_view.class);
                     // Truyền thông tin cá nhân
                     intent.putExtra("fullname", etFullname.getText().toString());
@@ -147,6 +150,8 @@ public class Activity_Form extends AppCompatActivity {
                     intent.putExtra("ward", etWard.getText().toString());
                     intent.putExtra("street", etStreet.getText().toString());
                     intent.putExtra("notes", etNotes.getText().toString());
+                    // Truyền UID của người gửi
+                    intent.putExtra("UID_sender", senderUid);
                     // Truyền thông tin sản phẩm
                     intent.putExtra("productName", tvProductName.getText().toString());
                     intent.putExtra("productInfo", tvProductInfo.getText().toString());
@@ -158,6 +163,7 @@ public class Activity_Form extends AppCompatActivity {
                 .addOnFailureListener(e ->
                         Toast.makeText(Activity_Form.this, "Lỗi gửi: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
+
     private void updateChatList(String receiverUid) {
         // Cập nhật cho người gửi: thêm người nhận vào ChatList của mình
         DatabaseReference chatListRefSender = FirebaseDatabase.getInstance()

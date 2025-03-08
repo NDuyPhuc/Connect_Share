@@ -32,6 +32,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -49,6 +50,7 @@ public class ChatListFragment extends Fragment {
     FirebaseUser firebaseUser;
     AdapterChatList adapterChatList;
     List<ModelChat> chatList;
+    private HashMap<String, Long> lastMessageTimestampMap = new HashMap<>();
 
 
     public ChatListFragment() {
@@ -101,21 +103,20 @@ public class ChatListFragment extends Fragment {
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                     ModelUser user = dataSnapshot1.getValue(ModelUser.class);
                     for (ModelChatList chatList : chatListList) {
-                        assert user != null;
-                        if (user.getUid() != null && user.getUid().equals(chatList.getId())) {
+                        if (user != null && user.getUid() != null && user.getUid().equals(chatList.getId())) {
                             usersList.add(user);
                             break;
                         }
                     }
-                    adapterChatList = new AdapterChatList(getActivity(), usersList);
-                    recyclerView.setAdapter(adapterChatList);
-
-                    // getting last message of the user
-                    for (int i = 0; i < usersList.size(); i++) {
-                        lastMessage(usersList.get(i).getUid());
-                    }
                 }
+                // Cập nhật adapter với usersList đã được lấy
+                adapterChatList = new AdapterChatList(getActivity(), usersList);
+                recyclerView.setAdapter(adapterChatList);
+                // Sau đó, load tất cả tin nhắn và sắp xếp danh sách theo thời gian tin nhắn mới nhất
+                loadLastMessagesAndSort();
             }
+
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -124,55 +125,56 @@ public class ChatListFragment extends Fragment {
         });
     }
 
-    private void lastMessage(final String uid) {
+    private void loadLastMessagesAndSort() {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Chats");
-        ref.addValueEventListener(new ValueEventListener() {
-            @SuppressLint("NotifyDataSetChanged")
+        // Sử dụng listener một lần vì bạn muốn cập nhật lại toàn bộ dữ liệu và sắp xếp
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String lastmess = "default";
-                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                    ModelChat chat = dataSnapshot1.getValue(ModelChat.class);
-                    if (chat == null) {
-                        continue;
-                    }
-                    String sender = chat.getSender();
-                    String receiver = chat.getReceiver();
-                    if (sender == null || receiver == null) {
-                        continue;
-                    }
-                    // Sử dụng ngoặc để rõ ràng hơn
-                    if ((chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(uid))
-                            || (chat.getReceiver().equals(uid) && chat.getSender().equals(firebaseUser.getUid()))) {
-                        if (chat.getType().equals("images")) {
-                            lastmess = "Đã gửi ảnh";
-                        } else if (chat.getType().equals("product")) {
-                            lastmess = "Thông tin sản phẩm";
-                        } else {
-                            lastmess = chat.getMessage();
+                // Xóa dữ liệu cũ
+                lastMessageTimestampMap.clear();
+                // Với mỗi người dùng trong usersList, tìm tin nhắn mới nhất
+                for (ModelUser user : usersList) {
+                    long maxTimestamp = 0;
+                    String lastMess = "default";
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        ModelChat chat = ds.getValue(ModelChat.class);
+                        if (chat == null) continue;
+                        // Kiểm tra điều kiện đối thoại giữa người dùng hiện tại và user
+                        if ((chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(user.getUid()))
+                                || (chat.getReceiver().equals(user.getUid()) && chat.getSender().equals(firebaseUser.getUid()))) {
+                            try {
+                                long chatTimestamp = Long.parseLong(chat.getTimestamp());
+                                if (chatTimestamp > maxTimestamp) {
+                                    maxTimestamp = chatTimestamp;
+                                    if (chat.getType().equals("images")) {
+                                        lastMess = "Đã gửi ảnh";
+                                    } else if (chat.getType().equals("product")) {
+                                        lastMess = "Thông tin sản phẩm";
+                                    } else {
+                                        lastMess = chat.getMessage();
+                                    }
+                                }
+                            } catch (NumberFormatException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
-
+                    // Lưu last message timestamp cho user
+                    lastMessageTimestampMap.put(user.getUid(), maxTimestamp);
+                    // Cập nhật last message text cho user trong adapter
+                    adapterChatList.setlastMessageMap(user.getUid(), lastMess);
                 }
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    ModelChatList modelChatList = ds.getValue(ModelChatList.class);
-                    if (modelChatList == null || modelChatList.getId() == null || modelChatList.getId().trim().isEmpty()) {
-                        continue; // Bỏ qua nếu dữ liệu không hợp lệ
-                    }
-                    // Nếu key chứa ký tự không hợp lệ, bạn có thể log và bỏ qua
-                    if (modelChatList.getId().contains(".") || modelChatList.getId().contains("#")
-                            || modelChatList.getId().contains("$") || modelChatList.getId().contains("[")
-                            || modelChatList.getId().contains("]")) {
-                        continue;
-                    }
-                    if (!modelChatList.getId().equals(firebaseUser.getUid())) {
-                        chatListList.add(modelChatList);
-                    }
-                }
-
-                adapterChatList.setlastMessageMap(uid, lastmess);
+                // Sau khi duyệt hết tin nhắn, sắp xếp usersList theo thứ tự giảm dần của timestamp
+                java.util.Collections.sort(usersList, (u1, u2) -> {
+                    long t1 = lastMessageTimestampMap.containsKey(u1.getUid()) ? lastMessageTimestampMap.get(u1.getUid()) : 0;
+                    long t2 = lastMessageTimestampMap.containsKey(u2.getUid()) ? lastMessageTimestampMap.get(u2.getUid()) : 0;
+                    // So sánh giảm dần: người có timestamp cao hơn (mới nhất) sẽ đứng đầu
+                    return Long.compare(t2, t1);
+                });
                 adapterChatList.notifyDataSetChanged();
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
