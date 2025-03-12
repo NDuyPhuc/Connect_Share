@@ -131,7 +131,16 @@
                             android:id="@+id/tv_product_info_view"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Thông tin chi tiết sản phẩm: "
+                            android:text="Không có thông tin vị trí "
+                            android:textSize="14sp"
+                            android:layout_marginTop="4dp"
+                            android:singleLine="false"
+                            android:ellipsize="none" />
+                        <TextView
+                            android:id="@+id/tv_product_info_view_more"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Không có thông tin chi tiết sản phẩm"
                             android:textSize="14sp"
                             android:layout_marginTop="4dp"
                             android:singleLine="false"

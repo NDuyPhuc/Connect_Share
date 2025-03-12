@@ -37,6 +37,7 @@ public class activity_form_view extends AppCompatActivity {
         // Ánh xạ các view cho thông tin sản phẩm
         TextView tvProductName = findViewById(R.id.tv_product_name_view);
         TextView tvProductInfo = findViewById(R.id.tv_product_info_view);
+        TextView tvProductInfo_more = findViewById(R.id.tv_product_info_view_more);
         ImageView ivProduct = findViewById(R.id.iv_product_view);
         Button back_view = findViewById(R.id.btn_back_view);
 
@@ -81,10 +82,12 @@ public class activity_form_view extends AppCompatActivity {
         // Lấy thông tin sản phẩm từ Intent (nếu được truyền)
         String productName = getIntent().getStringExtra("productName");
         String productInfo = getIntent().getStringExtra("productInfo");
+        String productInfo_more = getIntent().getStringExtra("productInfo_more");
         String productImage = getIntent().getStringExtra("productImage");
 
         tvProductName.setText((productName != null ? productName : ""));
         tvProductInfo.setText((productInfo != null ? productInfo : ""));
+        tvProductInfo_more.setText((productInfo_more != null ? productInfo_more : ""));
         if (productImage != null && !productImage.isEmpty()) {
             Glide.with(this).load(productImage).into(ivProduct);
         }

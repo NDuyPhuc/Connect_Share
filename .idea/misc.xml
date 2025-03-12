@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/ConnectShare-main/app/src/main/res/drawable/avatar_border.xml" value="0.1" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/drawable/bg_table_product.xml" value="0.1" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/drawable/bg_textview_button.xml" value="0.156" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/drawable/bg_textview_sent.xml" value="0.156" />
@@ -45,7 +46,7 @@
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/row_chat_right.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/row_chatlist.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/row_users.xml" value="0.20416666666666666" />
-        <entry key="..\:/ConnectShare-main/app/src/main/res/layout/viewpager_item.xml" value="0.2" />
+        <entry key="..\:/ConnectShare-main/app/src/main/res/layout/viewpager_item.xml" value="0.4175824175824176" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/menu/category_item.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/menu/menu_nav.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/menu/menu_nav2.xml" value="0.20416666666666666" />

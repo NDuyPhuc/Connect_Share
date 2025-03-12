@@ -31,7 +31,7 @@ public class Activity_Form extends AppCompatActivity {
 
     private EditText etFullname, etPhone, etCity, etDistrict, etWard, etStreet, etNotes;
     private ImageView ivProduct;
-    private TextView tvProductName, tvProductInfo;
+    private TextView tvProductName, tvProductInfo, tvProductInfo_more;
     private Button quay_lai, gui_sp;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -64,6 +64,7 @@ public class Activity_Form extends AppCompatActivity {
         ivProduct = findViewById(R.id.iv_product);
         tvProductName = findViewById(R.id.tv_product_name);
         tvProductInfo = findViewById(R.id.tv_product_info);
+        tvProductInfo_more = findViewById(R.id.tv_product_info1);
         quay_lai = findViewById(R.id.btn_back);
         gui_sp = findViewById(R.id.btn_submit);
 
@@ -71,6 +72,7 @@ public class Activity_Form extends AppCompatActivity {
         String infoOption = getIntent().getStringExtra("info_option");
         String productName = getIntent().getStringExtra("product_name");
         String productInfo = getIntent().getStringExtra("product_info");
+        String productInfo_more = getIntent().getStringExtra("product_info_more");
         String productImage = getIntent().getStringExtra("product_image");
         String receiverUid  = getIntent().getStringExtra("UID_personal");
         // Cập nhật thông tin sản phẩm trong TableLayout
@@ -79,6 +81,9 @@ public class Activity_Form extends AppCompatActivity {
         }
         if (productInfo != null) {
             tvProductInfo.setText(productInfo);
+        }
+        if (productInfo_more != null) {
+            tvProductInfo_more.setText(productInfo_more);
         }
         if (productImage != null) {
             Glide.with(this)
@@ -120,6 +125,7 @@ public class Activity_Form extends AppCompatActivity {
         try {
             productObject.put("productName", tvProductName.getText().toString());
             productObject.put("productInfo", tvProductInfo.getText().toString());
+            productObject.put("productInfo_more", tvProductInfo_more.getText().toString());
             productObject.put("productImage", getIntent().getStringExtra("product_image"));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -155,6 +161,7 @@ public class Activity_Form extends AppCompatActivity {
                     // Truyền thông tin sản phẩm
                     intent.putExtra("productName", tvProductName.getText().toString());
                     intent.putExtra("productInfo", tvProductInfo.getText().toString());
+                    intent.putExtra("productInfo_more", tvProductInfo_more.getText().toString());
                     intent.putExtra("productImage", getIntent().getStringExtra("product_image"));
 
                     startActivity(intent);

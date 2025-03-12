@@ -21,8 +21,11 @@ import com.example.save_food.Activity_Form;
 import com.example.save_food.R;
 import com.example.save_food.chat;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -54,6 +57,39 @@ public class VPAdapter extends RecyclerView.Adapter<VPAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         ViewPagerItem viewPagerItem = viewPagerItems.get(position);
+
+        // Lấy thông tin người dùng từ Firebase dựa trên UID của người đăng
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(viewPagerItem.getUid());
+        userRef.addListenerForSingleValueEvent(new ValueEventListener(){
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    String userName = snapshot.child("name").getValue(String.class);
+                    String userAvatar = snapshot.child("image").getValue(String.class);
+                    // Cập nhật tên người dùng
+                    if(userName != null) {
+                        holder.username_view.setText(userName);
+                    } else {
+                        holder.username_view.setText("Không có tên");
+                    }
+                    // Cập nhật avatar người dùng (sử dụng Picasso hoặc Glide)
+                    if(userAvatar != null && !userAvatar.isEmpty()){
+                        Picasso.get().load(userAvatar)
+                                .placeholder(R.drawable.person2) // Hình mặc định nếu chưa load được
+                                .into(holder.avatar_view);
+                    } else {
+                        holder.avatar_view.setImageResource(R.drawable.person2);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Xử lý lỗi nếu cần
+                Log.e("VPAdapter", "Lỗi khi lấy thông tin người dùng: " + error.getMessage());
+            }
+        });
+
         Picasso.get().load(viewPagerItem.getImgaeId()).into(holder.imageView);
 
         // Xử lý hiển thị text chỉ 2 từ cho tvHeading
@@ -91,6 +127,7 @@ public class VPAdapter extends RecyclerView.Adapter<VPAdapter.ViewHolder> {
                         // Truyền thông tin sản phẩm từ bài đăng (thông tin này lấy từ đối tượng viewPagerItem)
                         intent.putExtra("product_name", viewPagerItem.getHeding());        // Tên sản phẩm
                         intent.putExtra("product_info", viewPagerItem.getHeding2());      // Thông tin sản phẩm (ví dụ địa chỉ)
+                        intent.putExtra("product_info_more", viewPagerItem.getHeding3());
                         intent.putExtra("product_image", viewPagerItem.getImgaeId());    // URL hình ảnh sản phẩm
                         intent.putExtra("UID_personal", viewPagerItem.getUid());    // UID người đăng bài
                         context.startActivity(intent);
@@ -159,8 +196,8 @@ public class VPAdapter extends RecyclerView.Adapter<VPAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView imageView;
-        TextView tvHeading, tvHeading2, plikeTv, tvNhan;
+        ImageView imageView, avatar_view;
+        TextView tvHeading, tvHeading2, plikeTv, tvNhan, username_view;
         Button xemthemBtn;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -169,7 +206,8 @@ public class VPAdapter extends RecyclerView.Adapter<VPAdapter.ViewHolder> {
             tvHeading = itemView.findViewById(R.id.tvHeading);
             tvHeading2= itemView.findViewById(R.id.tv_Heading2);
             xemthemBtn= itemView.findViewById(R.id.btn_xemthem);
-
+            avatar_view=itemView.findViewById(R.id.img_avatar_post);
+            username_view=itemView.findViewById(R.id.tv_username_post);
         }
     }
 }

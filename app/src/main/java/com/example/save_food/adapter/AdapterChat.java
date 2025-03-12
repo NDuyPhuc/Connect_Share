@@ -99,12 +99,16 @@ public class AdapterChat extends RecyclerView.Adapter<AdapterChat.Myholder> {
                 JSONObject productObj = new JSONObject(modelChat.getMessage());
                 String prodName = productObj.optString("productName");
                 String prodInfo = productObj.optString("productInfo");
+                String prodInfo_More = productObj.optString("productInfo_more");
                 String prodImage = productObj.optString("productImage");
                 if(holder.productName != null) {
                     holder.productName.setText(prodName);
                 }
                 if(holder.productInfo != null) {
                     holder.productInfo.setText(prodInfo);
+                }
+                if(holder.productInfo_More != null) {
+                    holder.productInfo_More.setText(prodInfo_More);
                 }
                 if(holder.productImage != null) {
                     Glide.with(context).load(prodImage).into(holder.productImage);
@@ -115,6 +119,7 @@ public class AdapterChat extends RecyclerView.Adapter<AdapterChat.Myholder> {
                         // Nếu cần, truyền dữ liệu qua Intent extras
                         intent.putExtra("productName", prodName);
                         intent.putExtra("productInfo", prodInfo);
+                        intent.putExtra("productInfo_more", prodInfo_More);
                         intent.putExtra("productImage", prodImage);
                         intent.putExtra("UID_sender", modelChat.getSender());
 
@@ -129,6 +134,9 @@ public class AdapterChat extends RecyclerView.Adapter<AdapterChat.Myholder> {
                 }
                 if(holder.productInfo != null) {
                     holder.productInfo.setText("N/A");
+                }
+                if(holder.productInfo_More != null) {
+                    holder.productInfo_More.setText("N/A");
                 }
             }
         } else {
@@ -228,7 +236,7 @@ public class AdapterChat extends RecyclerView.Adapter<AdapterChat.Myholder> {
         ImageView mimage;
         CircleImageView image;
         // Dành cho tin nhắn sản phẩm
-        TextView productName, productInfo;
+        TextView productName, productInfo, productInfo_More;
         ImageView productImage;
         Button btnViewProduct;
 
@@ -237,6 +245,7 @@ public class AdapterChat extends RecyclerView.Adapter<AdapterChat.Myholder> {
             // Kiểm tra nếu itemView chứa các view của tin nhắn sản phẩm
             productName = itemView.findViewById(R.id.product_name);
             productInfo = itemView.findViewById(R.id.product_info);
+            productInfo_More = itemView.findViewById(R.id.product_info_more);
             productImage = itemView.findViewById(R.id.product_image);
             btnViewProduct = itemView.findViewById(R.id.btn_view_product);
 

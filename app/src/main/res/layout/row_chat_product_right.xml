@@ -39,6 +39,13 @@
                     android:id="@+id/product_info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="vị trí"
+                    android:textSize="14sp"
+                    android:layout_marginTop="4dp" />
+                <TextView
+                    android:id="@+id/product_info_more"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="Thông tin sản phẩm"
                     android:textSize="14sp"
                     android:layout_marginTop="4dp" />
