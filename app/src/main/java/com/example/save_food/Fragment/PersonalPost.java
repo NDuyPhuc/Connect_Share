@@ -171,7 +171,7 @@ public class PersonalPost extends Fragment {
 
         final EditText etExpiry = new EditText(getActivity());
         etExpiry.setHint("Expiry Time");
-        etExpiry.setText(post.getThoiGianHetHan());
+        etExpiry.setText(post.getThongTinChiTiet());
         layout.addView(etExpiry);
 
         final EditText etUnit = new EditText(getActivity());

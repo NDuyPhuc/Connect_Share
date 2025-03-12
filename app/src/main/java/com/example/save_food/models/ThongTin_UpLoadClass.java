@@ -9,7 +9,7 @@ public class ThongTin_UpLoadClass {
     private String tenDonHang;
     private String diaChi;
     private String nganhHang;
-    private String thoiGianHetHan;
+    private String thongTinChiTiet;
     private String donViHetHan;
     private String uid;
     private List<DataSnapshot> imageSnapshots = new ArrayList<>();
@@ -20,12 +20,11 @@ public class ThongTin_UpLoadClass {
     public ThongTin_UpLoadClass() {
     }
 
-    public ThongTin_UpLoadClass(String tenDonHang, String diaChi, String nganhHang, String thoiGianHetHan, String donViHetHan) {
+    public ThongTin_UpLoadClass(String tenDonHang, String diaChi, String nganhHang, String thongTinChiTiet) {
         this.tenDonHang = tenDonHang;
         this.diaChi = diaChi;
         this.nganhHang = nganhHang;
-        this.thoiGianHetHan = thoiGianHetHan;
-        this.donViHetHan = donViHetHan;
+        this.thongTinChiTiet = thongTinChiTiet;
     }
 
     public String getDonViHetHan() {
@@ -68,12 +67,12 @@ public class ThongTin_UpLoadClass {
         this.nganhHang = nganhHang;
     }
 
-    public String getThoiGianHetHan() {
-        return thoiGianHetHan;
+    public String getThongTinChiTiet() {
+        return thongTinChiTiet;
     }
 
-    public void setThoiGianHetHan(String thoiGianHetHan) {
-        this.thoiGianHetHan = thoiGianHetHan;
+    public void setThongTinChiTiet(String thongTinChiTiet) {
+        this.thongTinChiTiet = thongTinChiTiet;
     }
 
     public List<DataSnapshot> getImageSnapshots() {
@@ -98,7 +97,7 @@ public class ThongTin_UpLoadClass {
                 "tenDonHang='" + tenDonHang + '\'' +
                 ", diaChi='" + diaChi + '\'' +
                 ", nganhHang='" + nganhHang + '\'' +
-                ", thoiGianHetHan='" + thoiGianHetHan + '\'' +
+                ", thoiGianHetHan='" + thongTinChiTiet + '\'' +
                 ", donViHetHan='" + donViHetHan + '\'' +
                 '}';
     }

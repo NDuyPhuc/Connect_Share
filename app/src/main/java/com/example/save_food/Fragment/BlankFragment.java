@@ -147,11 +147,10 @@ public class BlankFragment extends Fragment {
                         String name = snapshot.child("tenDonHang").getValue(String.class);
                         String diaChi = snapshot.child("diaChi").getValue(String.class);
                         String nganhHang = snapshot.child("nganhHang").getValue(String.class);
-                        String thoiGianHetHan = snapshot.child("thoiGianHetHan").getValue(String.class);
-                        String donViHetHan = snapshot.child("donViHetHan").getValue(String.class);
+                        String thongTinChiTiet = snapshot.child("thongTinChiTiet").getValue(String.class);
                         DataSnapshot imgSnapshot = snapshot.child("Ảnh");
 
-                        ThongTin_UpLoadClass info = new ThongTin_UpLoadClass(name, diaChi, nganhHang, thoiGianHetHan, donViHetHan);
+                        ThongTin_UpLoadClass info = new ThongTin_UpLoadClass(name, diaChi, nganhHang, thongTinChiTiet);
                         info.setUid(uid);
                         List<DataSnapshot> imageList = new ArrayList<>();
                         for (DataSnapshot imgChild : imgSnapshot.getChildren()) {

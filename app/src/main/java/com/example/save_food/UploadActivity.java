@@ -77,13 +77,12 @@ public class UploadActivity extends AppCompatActivity implements RecyclerApdapte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload);
         tv_post = findViewById(R.id.tv_posttt);
-        EditText TenDonHang_Upload, DonGia_Upload, ThoiGianHetHan_Upload, DiaChi_Upload;
+        EditText TenDonHang_Upload, DonGia_Upload, ThongTinChiTiet, DiaChi_Upload;
         TenDonHang_Upload = findViewById(R.id.Ten_Don_Hang_Upload);
 //        DonGia_Upload = findViewById(R.id.Don_Gia_Upload);
-        ThoiGianHetHan_Upload = findViewById(R.id.ThoiGianHetHan_Upload);
+        ThongTinChiTiet = findViewById(R.id.ThongTinChiTiet);
         DiaChi_Upload = findViewById(R.id.DiaChi_Upload);
 
-        spinner2= findViewById(R.id.list_item_thoihan);
         spinner = findViewById(R.id.list_item_nganhhang);
         recyclerView = findViewById(R.id.recyclerView_Images);
         btn_upload = findViewById(R.id.btn_upload);
@@ -97,24 +96,24 @@ public class UploadActivity extends AppCompatActivity implements RecyclerApdapte
         spinner.setAdapter(adapter_list);
         spinner.setOnItemSelectedListener(this);
 
-        String[] list_thoigian = getResources().getStringArray(R.array.list_thoigian);
-        ArrayAdapter adapter_list2 = new ArrayAdapter(this, android.R.layout.simple_spinner_item,list_thoigian);
-        adapter_list2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner2.setAdapter(adapter_list2);
-        spinner2.setOnItemSelectedListener(this);
-
-        spinner2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                valueFromSpinner2 = parent.getItemAtPosition(position).toString();
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // không có gì được chọn
-            }
-        });
+//        String[] list_thoigian = getResources().getStringArray(R.array.list_thoigian);
+//        ArrayAdapter adapter_list2 = new ArrayAdapter(this, android.R.layout.simple_spinner_item,list_thoigian);
+//        adapter_list2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        spinner2.setAdapter(adapter_list2);
+//        spinner2.setOnItemSelectedListener(this);
+//
+//        spinner2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                valueFromSpinner2 = parent.getItemAtPosition(position).toString();
+//
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//                // không có gì được chọn
+//            }
+//        });
 
         adapter = new RecyclerApdapter(uri, getApplicationContext(), this, this);
         childCount=0;
@@ -139,17 +138,17 @@ public class UploadActivity extends AppCompatActivity implements RecyclerApdapte
                                 childCount = task.getResult().getChildrenCount();
                                 Log.d("Soluong", String.valueOf(childCount));
                                 //đưa dữ liệu lên firebase khi upload
-                                if(!valueFromSpinner2.isEmpty() && !valueFromSpinner.isEmpty()
+                                if(!valueFromSpinner.isEmpty()
                                         && !TenDonHang_Upload.getText().toString().isEmpty()
 //                                        && !TextUtils.isEmpty(DonGia_Upload.getText().toString())
                                         && !DiaChi_Upload.getText().toString().isEmpty()
-                                        && !ThoiGianHetHan_Upload.getText().toString().isEmpty() ){
+                                        && !ThongTinChiTiet.getText().toString().isEmpty() ){
                                     ThongTin_UpLoadClass thongTin_upLoadClass = new ThongTin_UpLoadClass(
                                             TenDonHang_Upload.getText().toString(),
 //                                            Integer.parseInt(DonGia_Upload.getText().toString()),
                                             DiaChi_Upload.getText().toString(),
                                             valueFromSpinner,
-                                            ThoiGianHetHan_Upload.getText().toString(), valueFromSpinner2);
+                                            ThongTinChiTiet.getText().toString());
                                     mData.child("ThongTin_UpLoad").child(uid).child(childCount+1+"").setValue(thongTin_upLoadClass);
                                     for(int i=0;i<uri.size();i++){
                                         uploadToFirebase(uri.get(i));
