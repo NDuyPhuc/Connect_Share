@@ -9,6 +9,10 @@
         android:title="All user"
         android:icon="@drawable/icon5"/>
     <item
+        android:id="@+id/upload_post_item"
+        android:title="Upload"
+        android:icon="@drawable/add"/>
+    <item
         android:id="@+id/chat_nav"
         android:title="Messenger"
         android:icon="@drawable/message"/>
@@ -16,9 +20,10 @@
         android:id="@+id/personal_post"
         android:title="Personal Post"
         android:icon="@drawable/profile"/>
-    <item
-        android:id="@+id/none"
-        android:title=""
-        android:enabled="false"
-        android:visible="false"/>
+<!--    <item-->
+<!--        android:id="@+id/none"-->
+<!--        android:title="Upload"-->
+<!--        android:enabled="false"-->
+<!--        android:visible="false"-->
+<!--    />-->
 </menu>

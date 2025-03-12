@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,6 +88,7 @@ public class homeFragment extends Fragment {
         dialog.setGifLocation(myUri);
         dialog.setLayoutColor(getResources().getColor(R.color.BeautifulProgressDialogBg));
         dialog.setMessageColor(getResources().getColor(R.color.white));
+
         bottomNavigationView = getActivity().findViewById(R.id.bottom_navigation);
             BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottom_navigation);
             NavigationView navigationView = getActivity().findViewById(R.id.Nav_view);
@@ -127,6 +129,12 @@ public class homeFragment extends Fragment {
                 if (itemId == R.id.Users_nav) {
                     navigationView.setCheckedItem(R.id.none);
                     openFragment(new UsersFragment());
+                    return true;
+                }
+                else if (itemId == R.id.upload_post_item) {
+                    navigationView.setCheckedItem(R.id.none);
+                    Intent intent = new Intent(getActivity(), UploadActivity.class);
+                    startActivity(intent);
                     return true;
                 }
                 else if (itemId == R.id.chat_nav) {
@@ -292,7 +300,7 @@ public class homeFragment extends Fragment {
                                     } else {
                                         // Người dùng chưa cấp phép quyền vị trí
                                         // Có thể hiển thị thông báo hoặc thực hiện các hành động khác tùy thuộc vào yêu cầu của bạn
-                                        Toast.makeText(getActivity(), "Vui lòng cấp phép quyền vị trí để sử dụng tính năng này", Toast.LENGTH_SHORT).show();
+//                                        Toast.makeText(getActivity(), "Vui lòng cấp phép quyền vị trí để sử dụng tính năng này", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             });
@@ -315,7 +323,7 @@ public class homeFragment extends Fragment {
                                                 // Lấy được vị trí hiện tại của người dùng
                                                 currentLocation = location;
                                                 if (currentLocation == null) {
-                                                    Toast.makeText(getActivity(), "Không thể lấy vị trí hiện tại", Toast.LENGTH_SHORT).show();
+//                                                    Toast.makeText(getActivity(), "Không thể lấy vị trí hiện tại", Toast.LENGTH_SHORT).show();
                                                     // Sử dụng dữ liệu mặc định hoặc ẩn một số chức năng
                                                 } else {
                                                     TinhKhoangCach(userLocations, currentLocation);
@@ -467,7 +475,7 @@ public class homeFragment extends Fragment {
                             // Cập nhật currentLocation nếu lấy được vị trí mới
                             currentLocation = location;
                             Log.d(TAG, "New location obtained: " + location.getLatitude() + ", " + location.getLongitude());
-                            Toast.makeText(getActivity(), "Vị trí đã được bật, vui lòng đợi vài giây để loading...và truy cập lại", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(getActivity(), "Vị trí đã được bật, vui lòng đợi vài giây để loading...và truy cập lại", Toast.LENGTH_SHORT).show();
                         } else {
                             Log.w(TAG, "Unable to obtain new location update");
 //                            Toast.makeText(getActivity(), "Vui lòng bật vị trí để sử dụng", Toast.LENGTH_SHORT).show();

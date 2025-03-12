@@ -21,6 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
@@ -81,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     CircularImageView imgAvatar;
     TextView tvname;
     Toolbar toolbar;
-    FragmentManager fragmentManager;
+    FragmentManager fragmentManager = getSupportFragmentManager();
 
     BottomNavigationView bottomNavigationView;
     String mUID;
@@ -119,9 +120,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         databaseReference = firebaseDatabase.getReference("Users");
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         NavigationView navigationView = findViewById(R.id.Nav_view);
-
         // Chọn item đầu tiên khi mở app
-        navigationView.setCheckedItem(R.id.nav_home);
+//        navigationView.setCheckedItem(R.id.google_map);
         // Xóa trạng thái chọn mặc định
         bottomNavigationView.setSelectedItemId(R.id.none);
         // Kiểm tra quyền truy cập vị trí
@@ -130,6 +130,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FirebaseUser user = mAuth.getCurrentUser();
         getLastLocation();
         updateLocationOnLogin(user);
+
+
         if (isNetworkAvailable()) {
             loadDataFromFirebase();
         } else {
@@ -184,8 +186,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return false;
             }
         });
-        fragmentManager = getSupportFragmentManager();
-        openFragment(new homeFragment());
+        // Kiểm tra xem homeFragment đã tồn tại chưa
+        Fragment homeFragment = fragmentManager.findFragmentByTag("HOME_FRAGMENT_TAG");
+        if (homeFragment == null) {
+            homeFragment = new homeFragment();
+            // Add fragment mà không gán container cho nó (headless fragment) hoặc ẩn nó đi
+            fragmentManager.beginTransaction().add(homeFragment, "HOME_FRAGMENT_TAG").commit();
+        }
+        // Tiếp tục mở BlankFragment cho giao diện chính
+        fragmentManager.beginTransaction().replace(R.id.content_frame, new BlankFragment()).commit();
 
 
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
@@ -292,7 +301,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             Toast.makeText(MainActivity.this, "Vị trí đã được bật, vui lòng đợi vài giây để loading...và truy cập lại", Toast.LENGTH_SHORT).show();
                         } else {
                             Log.w(TAG, "Unable to obtain new location update");
-                            Toast.makeText(MainActivity.this, "Vui lòng bật vị trí để sử dụng", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(MainActivity.this, "Vui lòng bật vị trí để sử dụng", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -411,6 +420,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume() {
         super.onResume();
+        NavigationView navigationView = findViewById(R.id.Nav_view);
+        if (navigationView != null) {
+            navigationView.setCheckedItem(R.id.none); // Reset trạng thái checked
+        }
         registerReceiver(locationSwitchStateReceiver, new IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION));
 
         // Kiểm tra quyền và cập nhật lại vị trí khi quay lại ứng dụng
@@ -458,8 +471,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
-        if (itemId == R.id.nav_home) {
-            openFragment(new homeFragment());
+        if (itemId == R.id.google_map) {
+            Intent intent = new Intent(this, MapsActivity.class);
+            startActivity(intent);
         } else if (itemId == R.id.nav_myprofile) {
             startActivity(new Intent(MainActivity.this, profileActivity.class));
         }else if (itemId == R.id.changepass) {
