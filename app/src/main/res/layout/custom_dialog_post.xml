@@ -1,60 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-    <ImageView
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="20dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="6dp"
+    android:background="@android:color/white">
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:foreground="@drawable/overlay_gradient"
-        android:id="@+id/dialog_post_img"/>
-<!--        android:src="@drawable/b"-->
-
-
-
-    <TextView
-        android:id="@+id/NamDonHangPostDialog"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="19dp"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        android:layout_gravity="center"
+        <!-- Hình ảnh với overlay gradient -->
+        <ImageView
+            android:id="@+id/dialog_post_img"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:src="@drawable/a"
+            android:background="@drawable/overlay_gradient"
+            android:clipToOutline="false"/>
 
-        android:text="Name"
-        android:textColor="@color/black"
-        android:textSize="30dp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:layout_gravity="center"
-
-        android:id="@+id/DiaChiPostDiaLog"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="19dp"
-        android:text="Name"
-        android:textSize="15dp"
-        android:textStyle="bold" />
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
-        android:layout_height="wrap_content">
-        <Button
-            android:id="@+id/closeButton"
-            android:layout_marginStart="60dp"
+        <!-- Tên đơn hàng -->
+        <TextView
+            android:id="@+id/NamDonHangPostDialog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Đóng" />
-        <Button
-            android:id="@+id/lienheBtn"
-            android:layout_marginStart="200dp"
-            android:textColor="@color/white"
-            android:background="@color/purple_500"
+            android:layout_marginTop="12dp"
+            android:text="Tên đơn hàng"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:gravity="center"
+            android:layout_gravity="center"/>
+
+        <!-- Địa chỉ -->
+        <TextView
+            android:id="@+id/DiaChiPostDiaLog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Liên hệ" />
-    </RelativeLayout>
+            android:layout_marginTop="8dp"
+            android:text="Địa chỉ giao hàng"
+            android:textSize="16sp"
+            android:textColor="@android:color/darker_gray"
+            android:gravity="center"
+            android:layout_gravity="center"/>
 
-</LinearLayout>
+        <!-- Thông tin chi tiết -->
+        <TextView
+            android:id="@+id/ThongTinChiTietDiaLog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Chi tiết đơn hàng"
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray"
+            android:gravity="center"
+            android:layout_gravity="center"/>
+
+        <!-- Hàng nút bấm -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/closeButton"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:text="Đóng"
+                android:textColor="@color/black"
+                android:background="@color/gray"
+                android:layout_marginEnd="8dp"
+               />
+
+            <Button
+                android:id="@+id/lienheBtn"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:text="Liên hệ"
+                android:textColor="@android:color/white"
+                android:background="@color/purple_500"
+                android:layout_marginStart="8dp"
+            />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

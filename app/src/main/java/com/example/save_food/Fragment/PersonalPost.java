@@ -170,14 +170,10 @@ public class PersonalPost extends Fragment {
         layout.addView(etCategory);
 
         final EditText etExpiry = new EditText(getActivity());
-        etExpiry.setHint("Expiry Time");
+        etExpiry.setHint("Detailed information");
         etExpiry.setText(post.getThongTinChiTiet());
         layout.addView(etExpiry);
 
-        final EditText etUnit = new EditText(getActivity());
-        etUnit.setHint("Unit");
-        etUnit.setText(post.getDonViHetHan());
-        layout.addView(etUnit);
 
         builder.setView(layout);
 
@@ -186,15 +182,15 @@ public class PersonalPost extends Fragment {
             String newAddress = etAddress.getText().toString().trim();
             String newCategory = etCategory.getText().toString().trim();
             String newExpiry = etExpiry.getText().toString().trim();
-            String newUnit = etUnit.getText().toString().trim();
+
             if(!TextUtils.isEmpty(newTitle) && !TextUtils.isEmpty(newAddress) &&
-                    !TextUtils.isEmpty(newCategory) && !TextUtils.isEmpty(newExpiry) && !TextUtils.isEmpty(newUnit)){
+                    !TextUtils.isEmpty(newCategory) && !TextUtils.isEmpty(newExpiry) ){
                 HashMap<String, Object> updateMap = new HashMap<>();
                 updateMap.put("tenDonHang", newTitle);
                 updateMap.put("diaChi", newAddress);
                 updateMap.put("nganhHang", newCategory);
-                updateMap.put("thoiGianHetHan", newExpiry);
-                updateMap.put("donViHetHan", newUnit);
+                updateMap.put("thongTinChiTiet", newExpiry);
+
                 postsRef.child(post.getPostId()).updateChildren(updateMap)
                         .addOnCompleteListener(task -> {
                             if(task.isSuccessful()){

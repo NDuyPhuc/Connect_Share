@@ -109,6 +109,11 @@ public class VPAdapter extends RecyclerView.Adapter<VPAdapter.ViewHolder> {
             public void onClick(View v) {
                 Log.d("TenDonhang", viewPagerItem.Heding);
                 Log.d("Diachi", viewPagerItem.Heding2);
+                String thongTinChiTiet = (viewPagerItem.Heding3 != null && !viewPagerItem.Heding3.isEmpty())
+                        ? viewPagerItem.Heding3
+                        : "Không có thông tin chi tiết";
+
+
                 String tendonhang = viewPagerItem.Heding;
                 String Diachi = viewPagerItem.Heding2;
                 String hisUid = viewPagerItems.get(position).getUid();
@@ -117,9 +122,11 @@ public class VPAdapter extends RecyclerView.Adapter<VPAdapter.ViewHolder> {
                 ImageView imageViewDialog = dialogView.findViewById(R.id.dialog_post_img);
                 TextView TendonHangDialog = dialogView.findViewById(R.id.NamDonHangPostDialog);
                 TextView DiachiDialog = dialogView.findViewById(R.id.DiaChiPostDiaLog);
+                TextView ThongTinChiTiet = dialogView.findViewById(R.id.ThongTinChiTietDiaLog);
                 Glide.with(context).load(viewPagerItem.getImgaeId()).into(imageViewDialog);
                 TendonHangDialog.setText(tendonhang);
                 DiachiDialog.setText(Diachi);
+                ThongTinChiTiet.setText(thongTinChiTiet);
                 Log.d("TextViewValue", TendonHangDialog.getText().toString());
                 AlertDialog dialog = builder.create();
                 dialog.setView(dialogView);

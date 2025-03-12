@@ -23,7 +23,7 @@
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/category_item.xml" value="0.203125" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/category_list_item.xml" value="0.203125" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/custom_dialog_image_zoom.xml" value="0.20416666666666666" />
-        <entry key="..\:/ConnectShare-main/app/src/main/res/layout/custom_dialog_post.xml" value="0.20416666666666666" />
+        <entry key="..\:/ConnectShare-main/app/src/main/res/layout/custom_dialog_post.xml" value="0.2" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/custom_single_image.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/dialog_category.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/fragment_blank.xml" value="0.20416666666666666" />
@@ -45,7 +45,7 @@
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/row_chat_right.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/row_chatlist.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/row_users.xml" value="0.20416666666666666" />
-        <entry key="..\:/ConnectShare-main/app/src/main/res/layout/viewpager_item.xml" value="0.5" />
+        <entry key="..\:/ConnectShare-main/app/src/main/res/layout/viewpager_item.xml" value="0.2" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/menu/category_item.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/menu/menu_nav.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/menu/menu_nav2.xml" value="0.20416666666666666" />

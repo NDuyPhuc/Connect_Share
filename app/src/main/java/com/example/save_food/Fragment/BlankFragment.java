@@ -173,7 +173,7 @@ public class BlankFragment extends Fragment {
                             String linkhinh = imgChild.child("linkHinh").getValue(String.class);
                             if (!uniqueImageLinks.contains(linkhinh)) {
                                 uniqueImageLinks.add(linkhinh);
-                                ViewPagerItem viewPagerItem = new ViewPagerItem(linkhinh, name, diaChi, uid);
+                                ViewPagerItem viewPagerItem = new ViewPagerItem(linkhinh, name, diaChi,thongTinChiTiet, uid);
                                 requireActivity().runOnUiThread(() -> {
                                     viewPagerItemArrayList.add(viewPagerItem);
                                     vpAdapter.notifyItemInserted(viewPagerItemArrayList.size() - 1);
@@ -237,7 +237,7 @@ public class BlankFragment extends Fragment {
                                     String linkHinh = imgChild.child("linkHinh").getValue(String.class);
                                     if (linkHinh != null) {
                                         // Thêm ảnh của bài đăng vào ViewPagerItem (không kiểm tra unique để đảm bảo tất cả bài được hiển thị)
-                                        viewPagerItemArrayList.add(new ViewPagerItem(linkHinh, post.getTenDonHang(), post.getDiaChi(), post.getUid()));
+                                        viewPagerItemArrayList.add(new ViewPagerItem(linkHinh, post.getTenDonHang(), post.getDiaChi(), post.getThongTinChiTiet(), post.getUid()));
                                     }
                                 }
                             } else {
@@ -373,7 +373,7 @@ public class BlankFragment extends Fragment {
                     String linkHinh = firstImg.child("linkHinh").getValue(String.class);
                     if (linkHinh != null && !uniqueImageLinks.contains(linkHinh)) {
                         uniqueImageLinks.add(linkHinh);
-                        viewPagerItemArrayList.add(new ViewPagerItem(linkHinh, post.getTenDonHang(), post.getDiaChi(), post.getUid()));
+                        viewPagerItemArrayList.add(new ViewPagerItem(linkHinh, post.getTenDonHang(), post.getDiaChi(), post.getThongTinChiTiet(), post.getUid()));
                     }
                 }
             }
