@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.save_food.Profile_Personal_Activity;
 import com.example.save_food.R;
 import com.example.save_food.chat;
 import com.example.save_food.models.ModelUser;
@@ -58,11 +59,12 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder>{
         myholder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, chat.class);
-                intent.putExtra("hisUid", hisuid);
+                Intent intent = new Intent(context, Profile_Personal_Activity.class);
+                intent.putExtra("USER_ID", hisuid);
                 context.startActivity(intent);
             }
         });
+
     }
 
     @Override

@@ -48,6 +48,7 @@ public class Profile_Personal_Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_personal_activity);
 
+
         // Lấy UID của người dùng từ intent (nếu có) hoặc dùng UID hiện tại
         profileUid = getIntent().getStringExtra("USER_ID");
         if (profileUid == null) {
