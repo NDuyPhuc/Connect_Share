@@ -161,12 +161,7 @@ public class UploadActivity extends AppCompatActivity implements RecyclerApdapte
                                 else{
                                     Toast.makeText(UploadActivity.this, "Vui lòng thêm 1 ảnh và điền đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
                                 }
-                                //  tv_post.setText(thongTin_upLoadClass.getTenDonHang());
 
-                                //truyền dữ liệu sang fragment_blank
-//                                fragmentManager = getSupportFragmentManager();
-//                                BlankFragment blankFragment = (BlankFragment) fragmentManager.findFragmentById(R.id.container);
-//                                blankFragment.tv_postt.setText(S);
                             } else {
                                 // Xử lý lỗi
                                 Toast.makeText(UploadActivity.this, "Lỗi!!!", Toast.LENGTH_SHORT).show();
@@ -175,18 +170,12 @@ public class UploadActivity extends AppCompatActivity implements RecyclerApdapte
                         }
                     });
 
-                    //lấy dữ liệu từ firebase về và đăng lên home
-//                    BlankFragment blankFragment = new BlankFragment();
-//                    blankFragment.GetDataFireBase(childCount+1);
-                    //GetDataFireBase();
-                    //tv_post.setText(ThongTin_UpLoadClass.getTenDonHang().toString());
+
                 }
                 else{
                     Toast.makeText(UploadActivity.this, "Bạn chưa chọn ảnh nào!", Toast.LENGTH_SHORT).show();
                 }
-//                Intent intent = new Intent(UploadActivity.this, homeFragment.class);
-//                startActivity(intent); finish();
-
+//
             }
         });
 

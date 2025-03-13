@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.save_food.activity_form_view;
 import com.example.save_food.R;
+import com.example.save_food.activity_form_view_bool;
 import com.example.save_food.models.ModelChat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -116,6 +117,20 @@ public class AdapterChat extends RecyclerView.Adapter<AdapterChat.Myholder> {
                 if(holder.btnViewProduct != null) {
                     holder.btnViewProduct.setOnClickListener(v -> {
                         Intent intent = new Intent(context, activity_form_view.class);
+                        // Nếu cần, truyền dữ liệu qua Intent extras
+                        intent.putExtra("productName", prodName);
+                        intent.putExtra("productInfo", prodInfo);
+                        intent.putExtra("productInfo_more", prodInfo_More);
+                        intent.putExtra("productImage", prodImage);
+                        intent.putExtra("UID_sender", modelChat.getSender());
+
+                        context.startActivity(intent);
+                    });
+
+                }
+                if(holder.btnViewProduct_bool != null) {
+                    holder.btnViewProduct_bool.setOnClickListener(v -> {
+                        Intent intent = new Intent(context, activity_form_view_bool.class);
                         // Nếu cần, truyền dữ liệu qua Intent extras
                         intent.putExtra("productName", prodName);
                         intent.putExtra("productInfo", prodInfo);
@@ -238,7 +253,7 @@ public class AdapterChat extends RecyclerView.Adapter<AdapterChat.Myholder> {
         // Dành cho tin nhắn sản phẩm
         TextView productName, productInfo, productInfo_More;
         ImageView productImage;
-        Button btnViewProduct;
+        Button btnViewProduct, btnViewProduct_bool;
 
         public Myholder(@NonNull View itemView) {
             super(itemView);
@@ -248,6 +263,7 @@ public class AdapterChat extends RecyclerView.Adapter<AdapterChat.Myholder> {
             productInfo_More = itemView.findViewById(R.id.product_info_more);
             productImage = itemView.findViewById(R.id.product_image);
             btnViewProduct = itemView.findViewById(R.id.btn_view_product);
+            btnViewProduct_bool = itemView.findViewById(R.id.btn_view_product_1);
 
             // Nếu layout tin nhắn text có, ánh xạ chúng
             message = itemView.findViewById(R.id.msgc);

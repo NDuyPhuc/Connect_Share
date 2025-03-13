@@ -28,6 +28,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Save_Food"
         tools:targetApi="31">
+        <activity android:name=".activity_form_view_bool" />
         <activity
             android:name=".reportActivity"
             android:theme="@style/AppThemeNo1"
@@ -40,6 +41,11 @@
             android:name=".OnboardingActivity"
             android:exported="false"
             android:theme="@style/ThemeNo" />
+        <activity
+            android:name=".Profile_Personal_Activity"
+            android:label="">
+        </activity>
+
         <activity
             android:name=".chat"
             android:exported="false"

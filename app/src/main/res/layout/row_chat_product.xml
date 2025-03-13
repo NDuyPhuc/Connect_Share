@@ -60,7 +60,7 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/btn_view_product"
+            android:id="@+id/btn_view_product_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Xem chi tiết"

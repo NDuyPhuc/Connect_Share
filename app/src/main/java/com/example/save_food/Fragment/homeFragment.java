@@ -304,17 +304,18 @@ public class homeFragment extends Fragment {
                                     }
                                 }
                             });
-                            if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+                                    != PackageManager.PERMISSION_GRANTED ||
+                                    ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                                            != PackageManager.PERMISSION_GRANTED) {
 
-                                // TODO: Consider calling
-                                //    ActivityCompat#requestPermissions
-                                // here to request the missing permissions, and then overriding
-                                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                //                                          int[] grantResults)
-                                // to handle the case where the user grants the permission. See the documentation
-                                // for ActivityCompat#requestPermissions for more details.
+                                // Yêu cầu cấp quyền truy cập vị trí
+                                ActivityCompat.requestPermissions(getActivity(),
+                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                                        100);
                                 return;
                             }
+
                             fusedLocationProviderClient.getLastLocation()
                                     .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
                                         @Override

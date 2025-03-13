@@ -16,7 +16,6 @@
         android:layout_height="?android:attr/actionBarSize"
         android:background="@color/purple_500"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -75,13 +74,6 @@
 
             </LinearLayout>
 
-            <!--            <ImageView-->
-            <!--                android:id="@+id/block"-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:layout_gravity="center_vertical"-->
-            <!--                android:layout_marginEnd="5dp"-->
-            <!--                android:src="@drawable/ic_baseline_lock_24" />-->
         </LinearLayout>
 
     </androidx.appcompat.widget.Toolbar>

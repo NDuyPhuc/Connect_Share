@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.save_food.Activity_Form;
+import com.example.save_food.Profile_Personal_Activity;
 import com.example.save_food.R;
 import com.example.save_food.chat;
 import com.google.firebase.auth.FirebaseAuth;
@@ -138,6 +140,14 @@ public class VPAdapter extends RecyclerView.Adapter<VPAdapter.ViewHolder> {
         });
 
 
+        holder.user_info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, Profile_Personal_Activity.class);
+                 intent.putExtra("USER_ID", viewPagerItem.getUid());
+                context.startActivity(intent);
+            }
+        });
 
 
         // Xử lý sự kiện cho button "Xem thêm"
@@ -199,6 +209,7 @@ public class VPAdapter extends RecyclerView.Adapter<VPAdapter.ViewHolder> {
         ImageView imageView, avatar_view;
         TextView tvHeading, tvHeading2, plikeTv, tvNhan, username_view;
         Button xemthemBtn;
+        LinearLayout user_info;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvNhan  = itemView.findViewById(R.id.tv_nhan);
@@ -208,6 +219,7 @@ public class VPAdapter extends RecyclerView.Adapter<VPAdapter.ViewHolder> {
             xemthemBtn= itemView.findViewById(R.id.btn_xemthem);
             avatar_view=itemView.findViewById(R.id.img_avatar_post);
             username_view=itemView.findViewById(R.id.tv_username_post);
+            user_info = itemView.findViewById(R.id.user_info);
         }
     }
 }
