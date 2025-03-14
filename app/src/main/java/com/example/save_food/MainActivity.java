@@ -23,6 +23,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +31,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -130,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FirebaseUser user = mAuth.getCurrentUser();
         getLastLocation();
         updateLocationOnLogin(user);
-
+        setupNavigationSwitch();
 
         if (isNetworkAvailable()) {
             loadDataFromFirebase();
@@ -216,6 +218,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+    private void setupNavigationSwitch() {
+        NavigationView navigationView = findViewById(R.id.Nav_view);
+        MenuItem menuItem = navigationView.getMenu().findItem(R.id.menu_toggle_location);
+        View actionView = menuItem.getActionView();
+        if (actionView != null) {
+            SwitchCompat switchLocation = actionView.findViewById(R.id.switch_location);
+            if (switchLocation != null) {
+                DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                userRef.child("showLocation").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        boolean showLocation = snapshot.getValue(Boolean.class) != null ? snapshot.getValue(Boolean.class) : true;
+                        switchLocation.setChecked(showLocation);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("MainActivity", "Lỗi khi lấy showLocation: " + error.getMessage());
+                    }
+                });
+
+                switchLocation.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                    userRef.child("showLocation").setValue(isChecked);
+                    Intent intent = new Intent("LOCATION_TOGGLE");
+                    intent.putExtra("showUserLocation", isChecked);
+                    sendBroadcast(intent);
+                    Toast.makeText(this, isChecked ? "Đã bật vị trí" : "Đã tắt vị trí", Toast.LENGTH_SHORT).show();
+                });
+            }
+        }
+    }
     private void updateLocationOnLogin(FirebaseUser user) {
         // Kiểm tra xem user có hợp lệ không
         if (user != null) {
@@ -468,6 +501,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
     }
+
+
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
@@ -476,13 +512,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(intent);
         } else if (itemId == R.id.nav_myprofile) {
             startActivity(new Intent(MainActivity.this, profileActivity.class));
-        }else if (itemId == R.id.changepass) {
+        } else if (itemId == R.id.changepass) {
             bottomNavigationView.setSelectedItemId(R.id.none);
             openFragment(new ChangePasswordFragment());
-        }else if (itemId == R.id.report) {
+        } else if (itemId == R.id.report) {
             startActivity(new Intent(MainActivity.this, reportActivity.class));
-        }
-        else if (itemId == R.id.logout) {
+        } else if (itemId == R.id.logout) {
             FirebaseAuth.getInstance().signOut();
             SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -491,9 +526,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(new Intent(MainActivity.this, loginActivity.class));
             finish();
         }
+        // Remove the menu_toggle_location handling from here as it's now in setupNavigationSwitch
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
 
     @Override
     public void onBackPressed() {

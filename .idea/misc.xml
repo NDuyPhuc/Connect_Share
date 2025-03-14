@@ -9,6 +9,7 @@
         <entry key="..\:/ConnectShare-main/app/src/main/res/drawable/bg_textview_sent.xml" value="0.156" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/drawable/circle_background.xml" value="0.1" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/drawable/gradient_map.xml" value="0.197" />
+        <entry key="..\:/ConnectShare-main/app/src/main/res/drawable/switch_track.xml" value="0.156" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/activity_chat.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/activity_forget_password.xml" value="0.17481884057971014" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/activity_form.xml" value="0.22" />
@@ -43,6 +44,7 @@
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/item_personal_post.xml" value="0.25" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/item_profile_pesonal_post.xml" value="0.203125" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/item_reiview_profile_pesonal_post.xml" value="0.20416666666666666" />
+        <entry key="..\:/ConnectShare-main/app/src/main/res/layout/item_switch_location.xml" value="0.23722627737226276" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/layout_header_nav.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/layout_header_nav_his.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/layout_progress_dialog.xml" value="0.20416666666666666" />
@@ -55,7 +57,7 @@
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/row_users.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/layout/viewpager_item.xml" value="0.4175824175824176" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/menu/category_item.xml" value="0.20416666666666666" />
-        <entry key="..\:/ConnectShare-main/app/src/main/res/menu/menu_nav.xml" value="0.20416666666666666" />
+        <entry key="..\:/ConnectShare-main/app/src/main/res/menu/menu_nav.xml" value="0.33" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/menu/menu_nav2.xml" value="0.20416666666666666" />
         <entry key="..\:/ConnectShare-main/app/src/main/res/menu/menu_nav3.xml" value="0.20416666666666666" />
         <entry key="..\:/Save_Food/app/src/main/res/drawable-anydpi/back.xml" value="0.2085" />

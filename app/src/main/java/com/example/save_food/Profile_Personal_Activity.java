@@ -323,11 +323,6 @@ public class Profile_Personal_Activity extends AppCompatActivity {
                     // Giả sử reviewType mặc định là 1, và dùng ảnh của bài đăng
                     reviewList.add(new Review(post.title, 1, post.imageLink));
                 }
-            } else {
-                // Nếu chưa có dữ liệu, bạn có thể thêm dữ liệu mẫu
-                reviewList.add(new Review("Bài đăng 1", 1, ""));
-                reviewList.add(new Review("Bài đăng 2", 3, ""));
-                reviewList.add(new Review("Bài đăng 3", 2, ""));
             }
             reviewsAdapter = new ReviewsAdapter(reviewList);
             recyclerView.setAdapter(reviewsAdapter);

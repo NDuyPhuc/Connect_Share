@@ -1,9 +1,15 @@
 package com.example.save_food;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -12,7 +18,6 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.example.save_food.models.MyClusterItem;
 import com.example.save_food.models.MyClusterRenderer;
-import com.example.save_food.models.UserLocation;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -21,7 +26,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -30,6 +34,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.clustering.ClusterManager;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -80,60 +88,103 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Di chuyển camera đến vị trí hiện tại
+        // Move camera to current location
         LatLng currentLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 16));
 
-        // Khởi tạo ClusterManager
+        // Always enable "My Location" layer (blue dot)
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        }
+
+        // Initialize ClusterManager
         clusterManager = new ClusterManager<>(this, mMap);
-        // Sử dụng renderer tùy chỉnh để load ảnh marker qua Glide
         MyClusterRenderer renderer = new MyClusterRenderer(this, mMap, clusterManager);
         clusterManager.setRenderer(renderer);
         mMap.setOnCameraIdleListener(clusterManager);
         mMap.setOnMarkerClickListener(clusterManager);
 
-        // Load vị trí người dùng từ Firebase
+        // Load initial markers
         loadUserLocationsFromFirebase();
+    }
 
-        // Cập nhật vị trí hiện tại của user lên Firebase
-        updateCurrentLocationToFirebase();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
+        boolean showLocation = prefs.getBoolean("showUserLocation", true);
+        Log.d("MapsActivity", "showLocation in onResume: " + showLocation); // Thêm log để kiểm tra
+        if (mMap != null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                mMap.setMyLocationEnabled(showLocation);
+                mMap.getUiSettings().setMyLocationButtonEnabled(showLocation);
+            } else {
+                mMap.setMyLocationEnabled(false);
+            }
+        }
     }
 
     private void loadUserLocationsFromFirebase() {
-        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("Users");
-        // Lấy dữ liệu một lần, có thể thay bằng addValueEventListener() nếu cần tự động cập nhật
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        clusterManager.clearItems();
+        DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("ThongTin_UpLoad");
+        postsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                clusterManager.clearItems();
+                Set<String> uidSet = new HashSet<>();
                 for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                    Double latitude = userSnapshot.child("Latitude").getValue(Double.class);
-                    Double longitude = userSnapshot.child("Longitude").getValue(Double.class);
-                    String imageUrl = userSnapshot.child("image").getValue(String.class); // giả sử trường ảnh tên "image"
-                    if (latitude != null && longitude != null) {
-                        LatLng position = new LatLng(latitude, longitude);
-                        MyClusterItem item = new MyClusterItem(position, imageUrl);
-                        clusterManager.addItem(item);
-                    }
+                    uidSet.add(userSnapshot.getKey());
                 }
-                clusterManager.cluster();
+                int totalUids = uidSet.size();
+                if (totalUids == 0) {
+                    clusterManager.cluster();
+                    return;
+                }
+                AtomicInteger counter = new AtomicInteger(0);
+                DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("Users");
+                for (String uid : uidSet) {
+                    usersRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot userSnapshot) {
+                            Double latitude = userSnapshot.child("Latitude").getValue(Double.class);
+                            Double longitude = userSnapshot.child("Longitude").getValue(Double.class);
+                            String imageUrl = userSnapshot.child("image").getValue(String.class);
+                            Boolean showLocation = userSnapshot.child("showLocation").getValue(Boolean.class);
+                            if (latitude != null && longitude != null && imageUrl != null && (showLocation == null || showLocation)) {
+                                LatLng position = new LatLng(latitude, longitude);
+                                MyClusterItem item = new MyClusterItem(position, imageUrl);
+                                clusterManager.addItem(item);
+                            }
+                            if (counter.incrementAndGet() == totalUids) {
+                                clusterManager.cluster();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Log.e("MapsActivity", "Lỗi khi lấy dữ liệu người dùng: " + error.getMessage());
+                            if (counter.incrementAndGet() == totalUids) {
+                                clusterManager.cluster();
+                            }
+                        }
+                    });
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(MapsActivity.this,
-                        "Lỗi load dữ liệu: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("MapsActivity", "Lỗi khi lấy bài đăng: " + error.getMessage());
+                clusterManager.cluster();
             }
         });
-    }
-
-    private void updateCurrentLocationToFirebase() {
+    }    private void updateCurrentLocationToFirebase() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null && currentLocation != null) {
             DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(user.getUid());
             userRef.child("Latitude").setValue(currentLocation.getLatitude());
             userRef.child("Longitude").setValue(currentLocation.getLongitude());
-            // Nếu có thêm trường image, bạn có thể cập nhật ở đây
             Toast.makeText(getApplicationContext(), "Cập nhật vị trí thành công", Toast.LENGTH_SHORT).show();
         }
     }
@@ -142,7 +193,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        // Gọi super để đảm bảo xử lý đúng override
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == FINE_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -153,5 +203,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    private BroadcastReceiver locationToggleReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if ("LOCATION_TOGGLE".equals(intent.getAction())) {
+                loadUserLocationsFromFirebase();
+            }
+        }
+    };
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        registerReceiver(locationToggleReceiver, new IntentFilter("LOCATION_TOGGLE"));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(locationToggleReceiver);
+    }
 }
