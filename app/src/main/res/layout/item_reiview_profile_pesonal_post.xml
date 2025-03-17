@@ -42,7 +42,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical">
-
+            <TextView
+                android:id="@+id/tv_review_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
             <!-- View cho cảm xúc Hài lòng -->
             <TextView
                 android:id="@+id/tv_review_hai_long"
@@ -67,5 +71,13 @@
                 android:text="Không hài lòng"
                 android:visibility="gone"/>
         </FrameLayout>
+
+        <!-- Nút đánh giá sản phẩm -->
+        <Button
+            android:id="@+id/btnReview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đánh giá"
+            />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

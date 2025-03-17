@@ -22,6 +22,7 @@ import com.example.save_food.activity_form_view;
 import com.example.save_food.R;
 import com.example.save_food.activity_form_view_bool;
 import com.example.save_food.models.ModelChat;
+import com.example.save_food.models.ThongTin_UpLoadClass;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.Query;
@@ -130,18 +131,20 @@ public class AdapterChat extends RecyclerView.Adapter<AdapterChat.Myholder> {
                 }
                 if(holder.btnViewProduct_bool != null) {
                     holder.btnViewProduct_bool.setOnClickListener(v -> {
+                        String postId = productObj.optString("postId");
                         Intent intent = new Intent(context, activity_form_view_bool.class);
-                        // Nếu cần, truyền dữ liệu qua Intent extras
-                        intent.putExtra("productName", prodName);
-                        intent.putExtra("productInfo", prodInfo);
-                        intent.putExtra("productInfo_more", prodInfo_More);
-                        intent.putExtra("productImage", prodImage);
+                        intent.putExtra("postId", postId);
+                        intent.putExtra("productName", productObj.optString("productName"));
+                        intent.putExtra("productInfo", productObj.optString("productInfo"));
+                        intent.putExtra("productInfo_more", productObj.optString("productInfo_more"));
+                        intent.putExtra("productImage", productObj.optString("productImage"));
                         intent.putExtra("UID_sender", modelChat.getSender());
-
+                        intent.putExtra("chatId", modelChat.getChatId());
                         context.startActivity(intent);
                     });
-
                 }
+
+
             } catch (JSONException e) {
                 e.printStackTrace();
                 if(holder.productName != null) {

@@ -367,7 +367,7 @@
         }
 
         private void readMessages() {
-            // show message after retrieving data
+            // Khởi tạo danh sách chat
             chatList = new ArrayList<>();
             DatabaseReference dbref = FirebaseDatabase.getInstance().getReference().child("Chats");
             dbref.addValueEventListener(new ValueEventListener() {
@@ -377,26 +377,31 @@
                     chatList.clear();
                     for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                         ModelChat modelChat = dataSnapshot1.getValue(ModelChat.class);
-                        if(modelChat.getSender() != null) {
-                            if (modelChat.getSender().equals(myuid) &&
-                                    modelChat.getReceiver().equals(hisUid) ||
-                                    modelChat.getReceiver().equals(myuid)
-                                            && modelChat.getSender().equals(hisUid)) {
-                                chatList.add(modelChat); // add the chat in chatlist
+                        if (modelChat != null) {
+                            // Gán chatId từ key của DataSnapshot
+                            modelChat.setChatId(dataSnapshot1.getKey());
+                            // Kiểm tra điều kiện đối thoại giữa 2 người
+                            if (modelChat.getSender() != null) {
+                                if ((modelChat.getSender().equals(myuid) && modelChat.getReceiver().equals(hisUid)) ||
+                                        (modelChat.getReceiver().equals(myuid) && modelChat.getSender().equals(hisUid))) {
+                                    chatList.add(modelChat); // Thêm chat vào danh sách
+                                }
                             }
                         }
-                        adapterChat = new AdapterChat(chat.this, chatList, image);
-                        adapterChat.notifyDataSetChanged();
-                        recyclerView.setAdapter(adapterChat);
                     }
+                    // Sau khi duyệt hết tin nhắn, khởi tạo adapter
+                    adapterChat = new AdapterChat(chat.this, chatList, image);
+                    adapterChat.notifyDataSetChanged();
+                    recyclerView.setAdapter(adapterChat);
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                    // Xử lý lỗi nếu cần
                 }
             });
         }
+
 
         private void showImagePicDialog() {
             String options[] = {"Camera", "Gallery"};

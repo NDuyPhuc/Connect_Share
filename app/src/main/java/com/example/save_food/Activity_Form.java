@@ -117,10 +117,9 @@ public class Activity_Form extends AppCompatActivity {
             Toast.makeText(this, "Không có thông tin người nhận", Toast.LENGTH_SHORT).show();
             return;
         }
-        String senderUid = firebaseUser.getUid(); // UID của người gửi
+        String senderUid = firebaseUser.getUid();
         long timestamp = System.currentTimeMillis();
 
-        // Tạo đối tượng JSON chứa thông tin sản phẩm
         JSONObject productObject = new JSONObject();
         try {
             productObject.put("productName", tvProductName.getText().toString());
@@ -132,7 +131,6 @@ public class Activity_Form extends AppCompatActivity {
         }
         String productData = productObject.toString();
 
-        // Tạo HashMap để gửi tin nhắn
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("sender", senderUid);
         hashMap.put("receiver", receiverUid);
@@ -140,15 +138,13 @@ public class Activity_Form extends AppCompatActivity {
         hashMap.put("timestamp", String.valueOf(timestamp));
         hashMap.put("dilihat", false);
         hashMap.put("type", "product");
+        hashMap.put("status", "pending"); // Thêm trạng thái mặc định
 
         chatRef.push().setValue(hashMap)
                 .addOnSuccessListener(aVoid -> {
-                    // Cập nhật ChatList cho cả 2 bên
                     updateChatList(receiverUid);
                     Toast.makeText(Activity_Form.this, "Đã gửi thông tin sản phẩm", Toast.LENGTH_SHORT).show();
-                    // Truyền UID của người gửi sang Activity_Form_View
                     Intent intent = new Intent(Activity_Form.this, activity_form_view.class);
-                    // Truyền thông tin cá nhân
                     intent.putExtra("fullname", etFullname.getText().toString());
                     intent.putExtra("phone", etPhone.getText().toString());
                     intent.putExtra("city", etCity.getText().toString());
@@ -156,14 +152,11 @@ public class Activity_Form extends AppCompatActivity {
                     intent.putExtra("ward", etWard.getText().toString());
                     intent.putExtra("street", etStreet.getText().toString());
                     intent.putExtra("notes", etNotes.getText().toString());
-                    // Truyền UID của người gửi
                     intent.putExtra("UID_sender", senderUid);
-                    // Truyền thông tin sản phẩm
                     intent.putExtra("productName", tvProductName.getText().toString());
                     intent.putExtra("productInfo", tvProductInfo.getText().toString());
                     intent.putExtra("productInfo_more", tvProductInfo_more.getText().toString());
                     intent.putExtra("productImage", getIntent().getStringExtra("product_image"));
-
                     startActivity(intent);
                     finish();
                 })

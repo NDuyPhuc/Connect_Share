@@ -1,11 +1,15 @@
 package com.example.save_food.models;
 
 import com.google.firebase.database.DataSnapshot;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class ThongTin_UpLoadClass {
+    private String title;
+    private String imageLink;
+    private String status;
+    private String acceptedUserId; // Thêm trường này để lưu acceptedUserId
+
     private String tenDonHang;
     private String diaChi;
     private String nganhHang;
@@ -17,6 +21,7 @@ public class ThongTin_UpLoadClass {
     // Thêm thuộc tính postId để lưu key của bài đăng
     private String postId;
 
+    // Constructor mặc định (cần thiết cho Firebase)
     public ThongTin_UpLoadClass() {
     }
 
@@ -27,12 +32,22 @@ public class ThongTin_UpLoadClass {
         this.thongTinChiTiet = thongTinChiTiet;
     }
 
-    public String getDonViHetHan() {
-        return donViHetHan;
+    // Các getter và setter khác ...
+
+    public String getAcceptedUserId() {
+        return acceptedUserId;
     }
 
-    public void setDonViHetHan(String donViHetHan) {
-        this.donViHetHan = donViHetHan;
+    public void setAcceptedUserId(String acceptedUserId) {
+        this.acceptedUserId = acceptedUserId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getTenDonHang() {
@@ -83,7 +98,6 @@ public class ThongTin_UpLoadClass {
         this.imageSnapshots = snapshots;
     }
 
-    // Getter và Setter cho postId
     public String getPostId() {
         return postId;
     }
@@ -97,8 +111,10 @@ public class ThongTin_UpLoadClass {
                 "tenDonHang='" + tenDonHang + '\'' +
                 ", diaChi='" + diaChi + '\'' +
                 ", nganhHang='" + nganhHang + '\'' +
-                ", thoiGianHetHan='" + thongTinChiTiet + '\'' +
+                ", thongTinChiTiet='" + thongTinChiTiet + '\'' +
                 ", donViHetHan='" + donViHetHan + '\'' +
+                ", status='" + status + '\'' +
+                ", acceptedUserId='" + acceptedUserId + '\'' +
                 '}';
     }
 }

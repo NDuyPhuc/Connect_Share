@@ -2,12 +2,19 @@ package com.example.save_food.models;
 
 public class ModelChat {
     String message;
+    private String status;
 
+    private String chatId;
 
     public String getMessage() {
         return message;
     }
-
+    public String getStatus() {
+        return status;
+    }
+    public void setStatus(String status) {
+        this.status = status;
+    }
     public void setMessage(String message) {
         this.message = message;
     }
@@ -75,6 +82,13 @@ public class ModelChat {
 
 
     boolean dilihat;
+
+    public String getChatId() {
+        return chatId;
+    }
+    public void setChatId(String chatId) {
+        this.chatId = chatId;
+    }
 }
 
 

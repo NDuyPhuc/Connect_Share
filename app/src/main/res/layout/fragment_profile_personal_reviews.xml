@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- RecyclerView hiển thị danh sách đánh giá từ khách hàng -->
+    <!-- RecyclerView hiển thị danh sách đánh giá -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_profile_reviews"
         android:layout_width="0dp"

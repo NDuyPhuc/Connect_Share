@@ -1,3 +1,4 @@
+// Profile_Personal_Activity.java
 package com.example.save_food;
 
 import android.content.Intent;
@@ -6,36 +7,35 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
-
+import com.example.save_food.adapter.ProductAdapter;
 import com.example.save_food.models.HinhAnh_Upload;
+import com.example.save_food.models.Product;
 import com.example.save_food.models.ThongTin_UpLoadClass;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.*;
 import com.squareup.picasso.Picasso;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Profile_Personal_Activity extends AppCompatActivity {
     public static ArrayList<PostsFragment.Post> sharedPosts;
-
     private ImageButton btnBack;
     private Button btnContact;
     private TabLayout tabLayout;
@@ -47,77 +47,48 @@ public class Profile_Personal_Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_personal_activity);
-
-
-        // Lấy UID của người dùng từ intent (nếu có) hoặc dùng UID hiện tại
         profileUid = getIntent().getStringExtra("USER_ID");
         if (profileUid == null) {
             profileUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         }
-
-        // Lấy thông tin người dùng (avatar, tên) từ Firebase
-        DatabaseReference userRef = FirebaseDatabase.getInstance()
-                .getReference("Users").child(profileUid);
-        userRef.addListenerForSingleValueEvent(new ValueEventListener(){
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(profileUid);
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    String userName = snapshot.child("name").getValue(String.class);
-                    String userAvatar = snapshot.child("image").getValue(String.class);
-                    TextView tvUsername = findViewById(R.id.tv_username);
-                    ImageView imgAvatar = findViewById(R.id.img_avatar);
-                    if (userName != null) {
-                        tvUsername.setText(userName);
-                    } else {
-                        tvUsername.setText("Không có tên");
-                    }
-                    if (userAvatar != null && !userAvatar.isEmpty()) {
-                        Picasso.get().load(userAvatar)
-                                .placeholder(R.drawable.person) // ảnh mặc định nếu load thất bại
-                                .into(imgAvatar);
-                    } else {
-                        imgAvatar.setImageResource(R.drawable.person);
-                    }
+                String userName = snapshot.child("name").getValue(String.class);
+                String userAvatar = snapshot.child("image").getValue(String.class);
+                TextView tvUsername = findViewById(R.id.tv_username);
+                ImageView imgAvatar = findViewById(R.id.img_avatar);
+                tvUsername.setText(userName != null ? userName : "Không có tên");
+                if (userAvatar != null && !userAvatar.isEmpty()) {
+                    Picasso.get().load(userAvatar).placeholder(R.drawable.person).into(imgAvatar);
+                } else {
+                    imgAvatar.setImageResource(R.drawable.person);
                 }
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) { }
         });
-
-        // Thiết lập Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar1);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         btnBack = findViewById(R.id.btn_back);
         btnBack.setOnClickListener(v -> finish());
-
-        // Xử lý nút "Liên hệ"
         btnContact = findViewById(R.id.btn_contact);
-        btnContact.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                        Intent intent = new Intent(Profile_Personal_Activity.this, chat.class);
-                        intent.putExtra("hisUid", profileUid);
-                        Profile_Personal_Activity.this.startActivity(intent);
-            }
+        btnContact.setOnClickListener(v -> {
+            Intent intent = new Intent(Profile_Personal_Activity.this, chat.class);
+            intent.putExtra("hisUid", profileUid);
+            startActivity(intent);
         });
-
-        // Thiết lập ViewPager2 và TabLayout để chuyển giữa Fragment
         viewPager = findViewById(R.id.view_pager);
         pagerAdapter = new ProfilePagerAdapter(this);
         viewPager.setAdapter(pagerAdapter);
         tabLayout = findViewById(R.id.tab_layout);
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
-            if (position == 0) {
-                tab.setText("Bài đăng");
-            } else {
-                tab.setText("Đánh giá từ khách hàng");
-            }
+            tab.setText(position == 0 ? "Bài đăng" : "Đánh giá từ khách hàng");
         }).attach();
     }
 
-    // Adapter cho ViewPager2
     private class ProfilePagerAdapter extends FragmentStateAdapter {
         public ProfilePagerAdapter(@NonNull AppCompatActivity activity) {
             super(activity);
@@ -125,11 +96,7 @@ public class Profile_Personal_Activity extends AppCompatActivity {
         @NonNull
         @Override
         public Fragment createFragment(int position) {
-            if (position == 0) {
-                return PostsFragment.newInstance(profileUid);
-            } else {
-                return ReviewsFragment.newInstance(profileUid);
-            }
+            return position == 0 ? PostsFragment.newInstance(profileUid) : ReviewsFragment.newInstance(profileUid);
         }
         @Override
         public int getItemCount() {
@@ -137,15 +104,12 @@ public class Profile_Personal_Activity extends AppCompatActivity {
         }
     }
 
-    // Fragment hiển thị danh sách bài đăng
     public static class PostsFragment extends Fragment {
-
         private RecyclerView recyclerView;
         private PostsAdapter postsAdapter;
         private List<Post> postList;
         private String profileUid;
 
-        // Factory method để truyền UID vào Fragment
         public static PostsFragment newInstance(String uid) {
             PostsFragment fragment = new PostsFragment();
             Bundle args = new Bundle();
@@ -156,84 +120,57 @@ public class Profile_Personal_Activity extends AppCompatActivity {
 
         @Nullable
         @Override
-        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                                 @Nullable Bundle savedInstanceState) {
+        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.fragment_profile_personal_posts, container, false);
             recyclerView = view.findViewById(R.id.recycler_view_profile_posts);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             postList = new ArrayList<>();
-
             if (getArguments() != null) {
                 profileUid = getArguments().getString("USER_ID");
-                Log.d("PostsFragment", "Profile UID: " + profileUid);
             }
-
-            // Sửa tên node: sử dụng "ThongTin_UpLoad" (chữ L viết hoa) để khớp với dữ liệu đã upload
-            DatabaseReference postsRef = FirebaseDatabase.getInstance()
-                    .getReference("ThongTin_UpLoad").child(profileUid);
-            postsRef.addValueEventListener(new ValueEventListener(){
+            DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("ThongTin_UpLoad").child(profileUid);
+            postsRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    Log.d("PostsFragment", "onDataChange: children count = " + snapshot.getChildrenCount());
                     postList.clear();
-                    if (snapshot.exists()) {
-                        for (DataSnapshot postSnapshot : snapshot.getChildren()){
-                            ThongTin_UpLoadClass upload = postSnapshot.getValue(ThongTin_UpLoadClass.class);
-                            if (upload != null) {
-                                // Lấy link ảnh từ node "Ảnh"
-                                String imageLink = "";
-                                DataSnapshot imageNode = postSnapshot.child("Ảnh");
-                                if (imageNode.exists()){
-                                    for (DataSnapshot child : imageNode.getChildren()){
-                                        // Sử dụng model HinhAnh_Upload để lấy link ảnh
-                                        HinhAnh_Upload hinhAnh = child.getValue(HinhAnh_Upload.class);
-                                        if (hinhAnh != null && hinhAnh.getLinkHinh() != null && !hinhAnh.getLinkHinh().isEmpty()){
-                                            imageLink = hinhAnh.getLinkHinh();
-                                            break;
-                                        }
+                    for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+                        ThongTin_UpLoadClass upload = postSnapshot.getValue(ThongTin_UpLoadClass.class);
+                        if (upload != null) {
+                            String imageLink = "";
+                            DataSnapshot imageNode = postSnapshot.child("Ảnh");
+                            if (imageNode.exists()) {
+                                for (DataSnapshot child : imageNode.getChildren()) {
+                                    HinhAnh_Upload hinhAnh = child.getValue(HinhAnh_Upload.class);
+                                    if (hinhAnh != null && hinhAnh.getLinkHinh() != null && !hinhAnh.getLinkHinh().isEmpty()) {
+                                        imageLink = hinhAnh.getLinkHinh();
+                                        break;
                                     }
                                 }
-                                Log.d("PostsFragment", "Post: " + upload.toStringg() + ", imageLink: " + imageLink);
-                                Post post = new Post(upload.getTenDonHang(), upload.getDiaChi(), upload.getThongTinChiTiet(), imageLink);
-                                postList.add(post);
-                            } else {
-                                Log.d("PostsFragment", "upload is null for key: " + postSnapshot.getKey());
                             }
+                            Post post = new Post(upload.getTenDonHang(), upload.getDiaChi(), upload.getThongTinChiTiet(), imageLink);
+                            postList.add(post);
                         }
-                    } else {
-                        Log.d("PostsFragment", "No posts found for UID: " + profileUid);
                     }
-                    // Cập nhật biến sharedPosts để ReviewsFragment có thể sử dụng
                     Profile_Personal_Activity.sharedPosts = new ArrayList<>(postList);
-                    // Cập nhật tiêu đề Tab với số lượng bài đăng
-                    if(getActivity() != null) {
+                    if (getActivity() != null) {
                         TabLayout tabLayout = getActivity().findViewById(R.id.tab_layout);
                         if (tabLayout != null && tabLayout.getTabAt(0) != null) {
                             tabLayout.getTabAt(0).setText("Bài đăng (" + postList.size() + ")");
                         }
                     }
-                    if (postsAdapter != null) {
+                    if (postsAdapter != null)
                         postsAdapter.notifyDataSetChanged();
-                    }
                 }
                 @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("PostsFragment", "onCancelled: " + error.getMessage());
-                }
+                public void onCancelled(@NonNull DatabaseError error) { }
             });
-
-
             postsAdapter = new PostsAdapter(postList);
             recyclerView.setAdapter(postsAdapter);
             return view;
         }
 
-        // Model cho bài đăng, bao gồm trường imageLink để hiển thị ảnh
         public static class Post {
-            String title;
-            String location;
-            String thongTinChiTiet;
-            String imageLink;
+            String title, location, thongTinChiTiet, imageLink;
             public Post(String title, String location, String thongTinChiTiet, String imageLink) {
                 this.title = title;
                 this.location = location;
@@ -242,7 +179,6 @@ public class Profile_Personal_Activity extends AppCompatActivity {
             }
         }
 
-        // Adapter cho RecyclerView bài đăng
         public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PostViewHolder> {
             private List<Post> posts;
             public PostsAdapter(List<Post> posts) {
@@ -251,8 +187,7 @@ public class Profile_Personal_Activity extends AppCompatActivity {
             @NonNull
             @Override
             public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_profile_pesonal_post, parent, false);
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_profile_pesonal_post, parent, false);
                 return new PostViewHolder(view);
             }
             @Override
@@ -278,24 +213,20 @@ public class Profile_Personal_Activity extends AppCompatActivity {
                     tvPostTitle.setText(post.title);
                     tvPostLocation.setText(post.location);
                     tvPostThongTin.setText(post.thongTinChiTiet);
-                    if (post.imageLink != null && !post.imageLink.isEmpty()) {
-                        Picasso.get().load(post.imageLink)
-                                .placeholder(R.drawable.a)
-                                .into(imgPost);
-                    } else {
+                    if (post.imageLink != null && !post.imageLink.isEmpty())
+                        Picasso.get().load(post.imageLink).placeholder(R.drawable.a).into(imgPost);
+                    else
                         imgPost.setImageResource(R.drawable.a);
-                    }
                 }
             }
         }
     }
 
-    // Fragment hiển thị danh sách đánh giá từ khách hàng (dữ liệu mẫu)
+    // ReviewsFragment inside Profile_Personal_Activity.java
     public static class ReviewsFragment extends Fragment {
-
         private RecyclerView recyclerView;
-        private ReviewsAdapter reviewsAdapter;
-        private List<Review> reviewList;
+        private ProductAdapter adapter;
+        private List<Product> productList;
         private String profileUid;
 
         public static ReviewsFragment newInstance(String uid) {
@@ -313,90 +244,63 @@ public class Profile_Personal_Activity extends AppCompatActivity {
             View view = inflater.inflate(R.layout.fragment_profile_personal_reviews, container, false);
             recyclerView = view.findViewById(R.id.recycler_view_profile_reviews);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-            reviewList = new ArrayList<>();
-            if(getArguments() != null) {
+            productList = new ArrayList<>();
+            if (getArguments() != null) {
                 profileUid = getArguments().getString("USER_ID");
             }
-            // Nếu có dữ liệu bài đăng đã được chia sẻ từ PostsFragment, chuyển đổi chúng thành review
-            if(Profile_Personal_Activity.sharedPosts != null && !Profile_Personal_Activity.sharedPosts.isEmpty()){
-                for(PostsFragment.Post post : Profile_Personal_Activity.sharedPosts){
-                    // Giả sử reviewType mặc định là 1, và dùng ảnh của bài đăng
-                    reviewList.add(new Review(post.title, 1, post.imageLink));
-                }
-            }
-            reviewsAdapter = new ReviewsAdapter(reviewList);
-            recyclerView.setAdapter(reviewsAdapter);
+            adapter = new ProductAdapter(getContext(), productList, profileUid);
+            recyclerView.setAdapter(adapter);
+            loadReviews();
             return view;
         }
 
-        // Mở rộng lớp Review để có thêm trường imageLink
-        public static class Review {
-            String postTitle;
-            int reviewType; // 1 = Hài lòng, 2 = Bình thường, 3 = Không hài lòng
-            String imageLink;
-            public Review(String postTitle, int reviewType, String imageLink) {
-                this.postTitle = postTitle;
-                this.reviewType = reviewType;
-                this.imageLink = imageLink;
-            }
-        }
-
-        public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewViewHolder> {
-            private List<Review> reviews;
-            public ReviewsAdapter(List<Review> reviews) {
-                this.reviews = reviews;
-            }
-            @NonNull
-            @Override
-            public ReviewViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_reiview_profile_pesonal_post, parent, false);
-                return new ReviewViewHolder(view);
-            }
-            @Override
-            public void onBindViewHolder(@NonNull ReviewViewHolder holder, int position) {
-                Review review = reviews.get(position);
-                holder.bind(review);
-            }
-            @Override
-            public int getItemCount() {
-                return reviews.size();
-            }
-            class ReviewViewHolder extends RecyclerView.ViewHolder {
-                TextView tvPostTitleReview;
-                ImageView imgPostReview;
-                TextView tvReviewHaiLong, tvReviewBinhThuong, tvReviewKhongHaiLong;
-                public ReviewViewHolder(@NonNull View itemView) {
-                    super(itemView);
-                    tvPostTitleReview = itemView.findViewById(R.id.tv_post_title_review);
-                    imgPostReview = itemView.findViewById(R.id.img_post_review);
-                    tvReviewHaiLong = itemView.findViewById(R.id.tv_review_hai_long);
-                    tvReviewBinhThuong = itemView.findViewById(R.id.tv_review_binh_thuong);
-                    tvReviewKhongHaiLong = itemView.findViewById(R.id.tv_review_khong_hai_long);
-                }
-                public void bind(Review review) {
-                    tvPostTitleReview.setText(review.postTitle);
-                    tvReviewHaiLong.setVisibility(View.GONE);
-                    tvReviewBinhThuong.setVisibility(View.GONE);
-                    tvReviewKhongHaiLong.setVisibility(View.GONE);
-                    if (review.reviewType == 1) {
-                        tvReviewHaiLong.setVisibility(View.VISIBLE);
-                    } else if (review.reviewType == 2) {
-                        tvReviewBinhThuong.setVisibility(View.VISIBLE);
-                    } else if (review.reviewType == 3) {
-                        tvReviewKhongHaiLong.setVisibility(View.VISIBLE);
+        private void loadReviews() {
+            DatabaseReference reviewsRef = FirebaseDatabase.getInstance().getReference("Reviews").child(profileUid);
+            reviewsRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Map<String, Product> reviewMap = new HashMap<>();
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        String key = ds.getKey();
+                        String title = ds.child("tenDonHang").getValue(String.class);
+                        if (title == null || title.isEmpty()) continue;
+                        String postId = ds.child("postId").getValue(String.class);
+                        if (postId == null || postId.isEmpty()) postId = key;
+                        String imageLink = null;
+                        DataSnapshot imagesNode = ds.child("Ảnh");
+                        if (imagesNode.exists()) {
+                            for (DataSnapshot imageSnapshot : imagesNode.getChildren()) {
+                                imageLink = imageSnapshot.child("linkHinh").getValue(String.class);
+                                if (imageLink != null && !imageLink.isEmpty()) break;
+                            }
+                        }
+                        String status = ds.child("status").getValue(String.class);
+                        String acceptedUserId = ds.child("uid").getValue(String.class);
+                        if (status == null || !status.equals("accepted")) continue;
+                        Product product = new Product(postId, title, imageLink, status, acceptedUserId);
+                        String ratingStr = ds.child("ratingType").getValue(String.class);
+                        int ratingType = 0;
+                        try {
+                            ratingType = ratingStr != null ? Integer.parseInt(ratingStr) : 0;
+                        } catch (NumberFormatException e) { }
+                        product.setRatingType(ratingType);
+                        reviewMap.put(title, product);
+                        Log.d("ReviewsFragment", "Review node key: " + key + ", Title: " + title +
+                                ", postId: " + postId + ", ImageLink: " + imageLink +
+                                ", Status: " + status + ", acceptedUserId: " + acceptedUserId +
+                                ", ratingType: " + ratingType);
                     }
-                    // Hiển thị ảnh nếu imageLink hợp lệ
-                    if (review.imageLink != null && !review.imageLink.isEmpty()) {
-                        Picasso.get().load(review.imageLink)
-                                .placeholder(R.drawable.a) // ảnh mặc định nếu load thất bại
-                                .into(imgPostReview);
-                    } else {
-                        imgPostReview.setImageResource(R.drawable.a);
-                    }
+                    productList.clear();
+                    productList.addAll(reviewMap.values());
+                    adapter.notifyDataSetChanged();
                 }
-            }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("ReviewsFragment", "Error loading reviews: " + error.getMessage());
+                }
+            });
         }
     }
+
 
 }

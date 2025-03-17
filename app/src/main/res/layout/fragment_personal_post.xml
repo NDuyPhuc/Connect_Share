@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- Header: Avatar và Tên (avatar ở trên, tên ở dưới) -->
+        <!-- Header: Avatar và Tên -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -39,24 +39,19 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- TextView hiển thị khi không có bài đăng -->
-        <TextView
-            android:id="@+id/tvNoPosts"
+        <!-- TabLayout cho ba tab -->
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Chưa có bài đăng của bạn"
-            android:textSize="16sp"
-            android:gravity="center"
-            android:visibility="gone"
-            android:padding="16dp" />
+            app:tabMode="fixed"
+            app:tabGravity="fill" />
 
-        <!-- RecyclerView hiển thị danh sách bài đăng nằm dưới header -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvPosts"
+        <!-- ViewPager2 để hiển thị nội dung của các tab -->
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPager"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:padding="8dp"
-            android:clipToPadding="false" />
+            android:layout_weight="1" />
     </LinearLayout>
 </FrameLayout>
