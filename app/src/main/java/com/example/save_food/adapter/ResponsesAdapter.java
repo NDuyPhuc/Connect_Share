@@ -70,7 +70,7 @@
                     holder.tvStatus.setTextColor(androidx.core.content.ContextCompat.getColor(context, android.R.color.holo_green_dark));
                 }
 
-                // Khi click vào toàn bộ item, chuyển sang activity_form_view và truyền dữ liệu sản phẩm
+                // Khi click vào toàn bộ item, chuyển sang activity_form_view_bool và truyền dữ liệu sản phẩm
                 holder.itemView.setOnClickListener(v -> {
                     Intent intent = new Intent(context, activity_form_view.class);
                     intent.putExtra("productName", prodName);
@@ -78,8 +78,21 @@
                     intent.putExtra("productInfo_more", prodInfo_more);
                     intent.putExtra("productImage", prodImage);
                     intent.putExtra("UID_sender", request.getSender());
+
+                    // Truyền thêm thông tin tự nhập nếu có
+                    String senderFullname = productObj.optString("sender_fullname", "");
+                    if (!senderFullname.isEmpty()) {
+                        intent.putExtra("fullname", senderFullname);
+                        intent.putExtra("phone", productObj.optString("sender_phone", ""));
+                        intent.putExtra("city", productObj.optString("sender_city", ""));
+                        intent.putExtra("district", productObj.optString("sender_district", ""));
+                        intent.putExtra("ward", productObj.optString("sender_ward", ""));
+                        intent.putExtra("street", productObj.optString("sender_street", ""));
+                        intent.putExtra("notes", productObj.optString("sender_notes", ""));
+                    }
                     context.startActivity(intent);
                 });
+
             } catch (JSONException e) {
                 e.printStackTrace();
                 holder.tvProductName.setText("N/A");

@@ -118,15 +118,24 @@ public class AdapterChat extends RecyclerView.Adapter<AdapterChat.Myholder> {
                 if(holder.btnViewProduct != null) {
                     holder.btnViewProduct.setOnClickListener(v -> {
                         Intent intent = new Intent(context, activity_form_view.class);
-                        // Nếu cần, truyền dữ liệu qua Intent extras
                         intent.putExtra("productName", prodName);
                         intent.putExtra("productInfo", prodInfo);
                         intent.putExtra("productInfo_more", prodInfo_More);
                         intent.putExtra("productImage", prodImage);
                         intent.putExtra("UID_sender", modelChat.getSender());
 
+                        // Truyền thêm thông tin người gửi nếu có (dữ liệu tự nhập)
+                        intent.putExtra("fullname", productObj.optString("sender_fullname"));
+                        intent.putExtra("phone", productObj.optString("sender_phone"));
+                        intent.putExtra("city", productObj.optString("sender_city"));
+                        intent.putExtra("district", productObj.optString("sender_district"));
+                        intent.putExtra("ward", productObj.optString("sender_ward"));
+                        intent.putExtra("street", productObj.optString("sender_street"));
+                        intent.putExtra("notes", productObj.optString("sender_notes"));
+
                         context.startActivity(intent);
                     });
+
 
                 }
                 if(holder.btnViewProduct_bool != null) {

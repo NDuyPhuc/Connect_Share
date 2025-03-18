@@ -28,6 +28,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -97,6 +98,7 @@ public class PostsFragment extends Fragment {
                     postList.add(post);
                 }
                 adapter.notifyDataSetChanged();
+                Collections.sort(postList, (o1, o2) -> o2.getPostId().compareTo(o1.getPostId()));
                 if (postList.isEmpty()) {
                     tvNoPosts.setVisibility(View.VISIBLE);
                     rvPosts.setVisibility(View.GONE);

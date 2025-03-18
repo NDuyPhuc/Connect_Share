@@ -45,36 +45,49 @@ public class activity_form_view extends AppCompatActivity {
             onBackPressed();
         });
 
-        String uid = getIntent().getStringExtra("UID_sender");
-        if (uid != null && !uid.isEmpty()) {
-            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(uid);
-            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    String fullname = snapshot.child("name").getValue(String.class);
-                    String phone = snapshot.child("phone").getValue(String.class);
-                    String city = snapshot.child("city").getValue(String.class);
-                    String district = snapshot.child("district").getValue(String.class);
-                    String ward = snapshot.child("ward").getValue(String.class);
-                    String street = snapshot.child("street").getValue(String.class);
-                    String notes = snapshot.child("notes").getValue(String.class);
+        // Kiểm tra xem có dữ liệu tự nhập được truyền qua hay không
+        String fullname = getIntent().getStringExtra("fullname");
+        if (fullname != null && !fullname.isEmpty()) {
+            // Nếu có, hiển thị dữ liệu tự nhập
+            tvFullname.setText("Họ và tên: " + fullname);
+            tvPhone.setText("Số điện thoại: " + getIntent().getStringExtra("phone"));
+            tvCity.setText("Thành phố: " + getIntent().getStringExtra("city"));
+            tvDistrict.setText("Quận/Huyện: " + getIntent().getStringExtra("district"));
+            tvWard.setText("Xã/Thị trấn: " + getIntent().getStringExtra("ward"));
+            tvStreet.setText("Đường/Số nhà: " + getIntent().getStringExtra("street"));
+            tvNotes.setText("Ghi chú: " + getIntent().getStringExtra("notes"));
+        } else {
+            // Nếu không có dữ liệu tự nhập, fallback về lấy từ Firebase theo UID_sender như cũ
+            String uid = getIntent().getStringExtra("UID_sender");
+            if (uid != null && !uid.isEmpty()) {
+                DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(uid);
+                userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String name = snapshot.child("name").getValue(String.class);
+                        String phone = snapshot.child("phone").getValue(String.class);
+                        String city = snapshot.child("city").getValue(String.class);
+                        String district = snapshot.child("district").getValue(String.class);
+                        String ward = snapshot.child("ward").getValue(String.class);
+                        String street = snapshot.child("street").getValue(String.class);
+                        String notes = snapshot.child("notes").getValue(String.class);
 
-                    tvFullname.setText("Họ và tên: " + (fullname != null ? fullname : ""));
-                    tvPhone.setText("Số điện thoại: " + (phone != null ? phone : ""));
-                    tvCity.setText("Thành phố: " + (city != null ? city : ""));
-                    tvDistrict.setText("Quận/Huyện: " + (district != null ? district : ""));
-                    tvWard.setText("Xã/Thị trấn: " + (ward != null ? ward : ""));
-                    tvStreet.setText("Đường/Số nhà: " + (street != null ? street : ""));
-                    tvNotes.setText("Ghi chú: " + (notes != null ? notes : ""));
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    // Xử lý lỗi nếu cần
-                }
-            });
-        }
-        else{
-            Log.d("UID_View", "UID bị NULL");
+                        tvFullname.setText("Họ và tên: " + (name != null ? name : ""));
+                        tvPhone.setText("Số điện thoại: " + (phone != null ? phone : ""));
+                        tvCity.setText("Thành phố: " + (city != null ? city : ""));
+                        tvDistrict.setText("Quận/Huyện: " + (district != null ? district : ""));
+                        tvWard.setText("Xã/Thị trấn: " + (ward != null ? ward : ""));
+                        tvStreet.setText("Đường/Số nhà: " + (street != null ? street : ""));
+                        tvNotes.setText("Ghi chú: " + (notes != null ? notes : ""));
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        // Xử lý lỗi nếu cần
+                    }
+                });
+            } else {
+                Log.d("UID_View", "UID bị NULL");
+            }
         }
 
 

@@ -55,14 +55,35 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsAdapter.Reques
 
             // Khi click vào toàn bộ item, chuyển sang activity_form_view và truyền dữ liệu sản phẩm
             holder.itemView.setOnClickListener(v -> {
-                Intent intent = new Intent(context, activity_form_view.class);
+                // Chọn activity hiển thị dựa trên trạng thái (ví dụ: nếu đã phản hồi thì chuyển sang activity_form_view_bool)
+                Intent intent;
+                if ("accepted".equals(request.getStatus()) || "rejected".equals(request.getStatus())) {
+                    intent = new Intent(context, activity_form_view_bool.class);
+                } else {
+                    intent = new Intent(context, activity_form_view.class);
+                }
+
+                // Truyền thông tin sản phẩm
                 intent.putExtra("productName", prodName);
                 intent.putExtra("productInfo", prodInfo);
                 intent.putExtra("productInfo_more", prodInfo_more);
                 intent.putExtra("productImage", prodImage);
                 intent.putExtra("UID_sender", request.getSender());
+
+                // Kiểm tra và truyền thêm dữ liệu tự nhập của người gửi nếu có
+                String senderFullname = productObj.optString("sender_fullname", "");
+                if (!senderFullname.isEmpty()) {
+                    intent.putExtra("fullname", senderFullname);
+                    intent.putExtra("phone", productObj.optString("sender_phone", ""));
+                    intent.putExtra("city", productObj.optString("sender_city", ""));
+                    intent.putExtra("district", productObj.optString("sender_district", ""));
+                    intent.putExtra("ward", productObj.optString("sender_ward", ""));
+                    intent.putExtra("street", productObj.optString("sender_street", ""));
+                    intent.putExtra("notes", productObj.optString("sender_notes", ""));
+                }
                 context.startActivity(intent);
             });
+
         } catch (JSONException e) {
             e.printStackTrace();
             holder.tvProductName.setText("N/A");

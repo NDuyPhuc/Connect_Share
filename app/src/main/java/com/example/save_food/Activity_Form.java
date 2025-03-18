@@ -126,9 +126,21 @@ public class Activity_Form extends AppCompatActivity {
             productObject.put("productInfo", tvProductInfo.getText().toString());
             productObject.put("productInfo_more", tvProductInfo_more.getText().toString());
             productObject.put("productImage", getIntent().getStringExtra("product_image"));
+
+            String infoOption = getIntent().getStringExtra("info_option");
+            if (!"preset".equals(infoOption)) {
+                productObject.put("sender_fullname", etFullname.getText().toString());
+                productObject.put("sender_phone", etPhone.getText().toString());
+                productObject.put("sender_city", etCity.getText().toString());
+                productObject.put("sender_district", etDistrict.getText().toString());
+                productObject.put("sender_ward", etWard.getText().toString());
+                productObject.put("sender_street", etStreet.getText().toString());
+                productObject.put("sender_notes", etNotes.getText().toString());
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         String productData = productObject.toString();
 
         HashMap<String, Object> hashMap = new HashMap<>();

@@ -26,6 +26,7 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class RequestsFragment extends Fragment {
@@ -76,7 +77,7 @@ public class RequestsFragment extends Fragment {
                         }
                     }
                 }
-
+                Collections.sort(requestList, (r1, r2) -> r2.getRequestId().compareTo(r1.getRequestId()));
                 adapter.notifyDataSetChanged();
             }
 
