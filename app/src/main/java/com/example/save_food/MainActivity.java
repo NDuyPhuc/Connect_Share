@@ -3,7 +3,10 @@ package com.example.save_food;
 import static android.content.ContentValues.TAG;
 import static android.telephony.CellLocation.requestLocationUpdate;
 
+import static com.example.save_food.R.*;
+
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -171,23 +174,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.hongcogihet:
-                        bottomNavigationView.setSelectedItemId(R.id.none);
-                        openFragment(new BlankFragment());
-                        return true;
-                    case R.id.Users_nav:
-                        bottomNavigationView.setSelectedItemId(R.id.none);
-                        openFragment(new UsersFragment());
-                        return true;
-                    case R.id.chat_nav:
-                        bottomNavigationView.setSelectedItemId(R.id.none);
-                        openFragment(new ChatListFragment());
-                        return true;
+                int id = item.getItemId();
+                if (id == R.id.hongcogihet) {
+                    bottomNavigationView.setSelectedItemId(R.id.none);
+                    openFragment(new BlankFragment());
+                    return true;
+                } else if (id == R.id.Users_nav) {
+                    bottomNavigationView.setSelectedItemId(R.id.none);
+                    openFragment(new UsersFragment());
+                    return true;
+                } else if (id == R.id.chat_nav) {
+                    bottomNavigationView.setSelectedItemId(R.id.none);
+                    openFragment(new ChatListFragment());
+                    return true;
                 }
                 return false;
             }
         });
+
         // Kiểm tra xem homeFragment đã tồn tại chưa
         Fragment homeFragment = fragmentManager.findFragmentByTag("HOME_FRAGMENT_TAG");
         if (homeFragment == null) {
@@ -509,6 +513,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int itemId = item.getItemId();
         if (itemId == R.id.google_map) {
             Intent intent = new Intent(this, MapsActivity.class);
+            startActivity(intent);
+        }
+        if (itemId == R.id.AI_BOT) {
+            Intent intent = new Intent(this, ChatBotAIActivity.class);
             startActivity(intent);
         } else if (itemId == R.id.nav_myprofile) {
             startActivity(new Intent(MainActivity.this, profileActivity.class));

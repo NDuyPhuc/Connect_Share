@@ -215,7 +215,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onStart() {
         super.onStart();
-        registerReceiver(locationToggleReceiver, new IntentFilter("LOCATION_TOGGLE"));
+        registerReceiver(locationToggleReceiver, new IntentFilter("LOCATION_TOGGLE"), Context.RECEIVER_NOT_EXPORTED);
     }
 
     @Override

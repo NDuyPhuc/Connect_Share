@@ -6,6 +6,10 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/AI_BOT"
+            android:title="CHAT BOT AI"
+            android:icon="@drawable/ic_ai"/>
+        <item
             android:id="@+id/google_map"
             android:title="Google Maps"
             android:icon="@drawable/google_maps"/>

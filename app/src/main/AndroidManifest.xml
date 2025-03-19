@@ -33,6 +33,8 @@
             android:name=".reportActivity"
             android:theme="@style/AppThemeNo1"
             android:exported="false" />
+        <activity android:name=".ChatBotAIActivity" />
+
         <activity
             android:name=".SplashActivity"
             android:exported="false"
