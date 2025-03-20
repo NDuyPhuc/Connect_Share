@@ -347,12 +347,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == RC_NOTIFICATIONS) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Cho phép", Toast.LENGTH_SHORT).show();
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                Toast.makeText(this, "Cho phép", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "Không cho phép", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "Không cho phép", Toast.LENGTH_SHORT).show();
             }
         }
+
         if (requestCode == LOCATIONS) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Intent i = getIntent();
