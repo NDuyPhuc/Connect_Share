@@ -86,6 +86,7 @@
     import java.util.HashMap;
     import java.util.List;
     import java.util.Map;
+    import java.util.Objects;
 
     import de.hdodenhof.circleimageview.CircleImageView;
     import retrofit2.Call;
@@ -283,7 +284,7 @@
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     for (DataSnapshot dataSnapshot: snapshot.getChildren()){
                         ModelChat chat = dataSnapshot.getValue(ModelChat.class);
-                        if(chat.getReceiver().equals(myuid) && chat.getSender().equals(hisUid)){
+                        if (Objects.equals(chat.getReceiver(), myuid) && Objects.equals(chat.getSender(), hisUid)) {
                             HashMap<String, Object> hasSeenHashMap = new HashMap<>();
                             hasSeenHashMap.put("dilihat", true);
                             dataSnapshot.getRef().updateChildren(hasSeenHashMap);
