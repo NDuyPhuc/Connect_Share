@@ -141,19 +141,21 @@ public class ChatListFragment extends Fragment {
                         ModelChat chat = ds.getValue(ModelChat.class);
                         if (chat == null) continue;
                         // Kiểm tra điều kiện đối thoại giữa người dùng hiện tại và user
-                        if ((chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(user.getUid()))
-                                || (chat.getReceiver().equals(user.getUid()) && chat.getSender().equals(firebaseUser.getUid()))) {
+                        if (chat.getReceiver() != null && chat.getSender() != null &&
+                                ((chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(user.getUid()))
+                                        || (chat.getReceiver().equals(user.getUid()) && chat.getSender().equals(firebaseUser.getUid())))) {
                             try {
                                 long chatTimestamp = Long.parseLong(chat.getTimestamp());
                                 if (chatTimestamp > maxTimestamp) {
                                     maxTimestamp = chatTimestamp;
-                                    if (chat.getType().equals("images")) {
+                                    if ("images".equals(chat.getType())) {
                                         lastMess = "Đã gửi ảnh";
-                                    } else if (chat.getType().equals("product")) {
+                                    } else if ("product".equals(chat.getType())) {
                                         lastMess = "Thông tin sản phẩm";
                                     } else {
                                         lastMess = chat.getMessage();
                                     }
+
                                 }
                             } catch (NumberFormatException e) {
                                 e.printStackTrace();
