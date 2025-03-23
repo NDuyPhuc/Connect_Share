@@ -130,12 +130,14 @@
 
     <TextView
         android:id="@+id/or"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:gravity="center"
+        android:padding="25dp"
         android:text="@string/or"
         android:textAppearance="@style/or" />
+
+
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -149,7 +151,9 @@
             android:layout_height="60dp"
             android:background="@drawable/facebook"
             android:layout_marginEnd="100dp"
-            android:contentDescription="@string/buttonfb" />
+            android:contentDescription="@string/buttonfb"
+            android:visibility="gone" />
+
 
         <ImageButton
             android:id="@+id/btngg"
