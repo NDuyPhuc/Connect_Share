@@ -172,6 +172,7 @@ public class loginActivity extends AppCompatActivity {
         mgg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d("LoginActivity", "Chuyển về MainActivity");
                 Intent signInIntent = gsc.getSignInIntent();
                 startActivityForResult(signInIntent, 100);
             }
@@ -194,7 +195,9 @@ public class loginActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
         String check = sharedPreferences.getString("email", "");
         if(check.equals("true")){
-            startActivity(new Intent(loginActivity.this, MainActivity.class));
+            Intent intent = new Intent(loginActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
             finish();
         } else{
 
@@ -311,7 +314,10 @@ public class loginActivity extends AppCompatActivity {
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = auth.getCurrentUser();
                             updateLocationOnLogin(user);
-                            startActivity(new Intent(loginActivity.this, MainActivity.class));
+                            Log.d("LoginActivity", "Chuyển về MainActivity");
+                            Intent intent = new Intent(loginActivity.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                            startActivity(intent);
                         } else {
                             progressDialog.dismiss();
                             // If sign in fails, display a message to the user.
@@ -373,7 +379,10 @@ public class loginActivity extends AppCompatActivity {
                     editor.putString("email", "true");
                     editor.apply();
                     Toast.makeText(loginActivity.this, "Login",Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(loginActivity.this, MainActivity.class));
+                    Log.d("LoginActivity", "Chuyển về MainActivity");
+                    Intent intent = new Intent(loginActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    startActivity(intent);
                 } else {
                     progressDialog.dismiss();
                     Toast.makeText(loginActivity.this, "error",Toast.LENGTH_SHORT).show();
@@ -421,7 +430,10 @@ public class loginActivity extends AppCompatActivity {
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putString("email", "true");
                             editor.apply();
-                            startActivity(new Intent(loginActivity.this, MainActivity.class));
+                            Log.d("LoginActivity", "Chuyển về MainActivity");
+                            Intent intent = new Intent(loginActivity.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                            startActivity(intent);
 
                         } else {
                             progressDialog.dismiss();

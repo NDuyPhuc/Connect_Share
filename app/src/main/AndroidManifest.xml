@@ -70,7 +70,11 @@
         <activity
             android:name=".MapsActivity"
             android:exported="false"
-            android:label="AIzaSyAacOO7yRwLHKGkPSoWri-5_rYdbagJTEA" />
+            android:label="Maps" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/Map_API_KEY" />
+
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
 
@@ -99,17 +103,19 @@
         <activity
             android:name=".MainActivity"
             android:exported="false" />
-        <activity
-            android:name=".loginActivity"
-            android:exported="true"
-            android:theme="@style/ThemeNo">
+            <activity
+                android:name=".loginActivity"
+                android:exported="true"
+                android:theme="@style/ThemeNo">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />

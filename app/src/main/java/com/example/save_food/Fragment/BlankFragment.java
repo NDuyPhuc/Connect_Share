@@ -44,7 +44,10 @@ import java.util.List;
 import java.util.Map;
 
 public class BlankFragment extends Fragment {
-
+    private List<ChildEventListener> listeners = new ArrayList<>(); // Danh sách các listener
+    private List<DatabaseReference> refs = new ArrayList<>();       // Danh sách các reference tương ứng
+    private ChildEventListener categoryListener;                    // Listener riêng cho loadDataFromFirebase
+    private DatabaseReference categoryRef;                          // Reference riêng cho loadDataFromFirebase
     private ViewPager2 viewPager2;
     private ArrayList<ViewPagerItem> viewPagerItemArrayList;
     private ArrayList<KhoangCachLocation> khoangCachLocationList = new ArrayList<>();
@@ -128,7 +131,6 @@ public class BlankFragment extends Fragment {
      * Phương thức tải dữ liệu từ Firebase khi có quyền vị trí
      */
     private void loadData() {
-        // Kiểm tra lại quyền trước khi tải dữ liệu (tránh trường hợp không có quyền)
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Log.w("BlankFragment", "Không có quyền truy cập vị trí. Không tải dữ liệu.");
@@ -141,44 +143,48 @@ public class BlankFragment extends Fragment {
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference myRef = database.getReference("ThongTin_UpLoad/" + uid);
 
-                myRef.addChildEventListener(new ChildEventListener() {
+                ChildEventListener listener = new ChildEventListener() {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                        String name = snapshot.child("tenDonHang").getValue(String.class);
-                        String diaChi = snapshot.child("diaChi").getValue(String.class);
-                        String nganhHang = snapshot.child("nganhHang").getValue(String.class);
-                        String thongTinChiTiet = snapshot.child("thongTinChiTiet").getValue(String.class);
-                        DataSnapshot imgSnapshot = snapshot.child("Ảnh");
+                        if (isAdded()) {
+                            String name = snapshot.child("tenDonHang").getValue(String.class);
+                            String diaChi = snapshot.child("diaChi").getValue(String.class);
+                            String nganhHang = snapshot.child("nganhHang").getValue(String.class);
+                            String thongTinChiTiet = snapshot.child("thongTinChiTiet").getValue(String.class);
+                            DataSnapshot imgSnapshot = snapshot.child("Ảnh");
 
-                        ThongTin_UpLoadClass info = new ThongTin_UpLoadClass(name, diaChi, nganhHang, thongTinChiTiet);
-                        info.setUid(uid);
-                        List<DataSnapshot> imageList = new ArrayList<>();
-                        for (DataSnapshot imgChild : imgSnapshot.getChildren()) {
-                            imageList.add(imgChild);
-                        }
-                        info.setImageSnapshots(imageList);
-                        fullPostList.add(info);
-                        if (nganhHang != null) {
-                            int count = categoryCountMap.containsKey(nganhHang) ? categoryCountMap.get(nganhHang) : 0;
-                            categoryCountMap.put(nganhHang, count + 1);
-                        }
-                        if (selectedCategory.equals("---") || selectedCategory.equals("All") || (nganhHang != null && nganhHang.equals(selectedCategory))) {
-                            filteredPostList.add(info);
-                            requireActivity().runOnUiThread(() -> {
-                                vpAdapter.notifyItemInserted(filteredPostList.size() - 1);
-                            });
-                        }
-
-                        for (DataSnapshot imgChild : imgSnapshot.getChildren()) {
-                            String linkhinh = imgChild.child("linkHinh").getValue(String.class);
-                            if (!uniqueImageLinks.contains(linkhinh)) {
-                                uniqueImageLinks.add(linkhinh);
-                                ViewPagerItem viewPagerItem = new ViewPagerItem(linkhinh, name, diaChi,thongTinChiTiet, uid);
+                            ThongTin_UpLoadClass info = new ThongTin_UpLoadClass(name, diaChi, nganhHang, thongTinChiTiet);
+                            info.setUid(uid);
+                            List<DataSnapshot> imageList = new ArrayList<>();
+                            for (DataSnapshot imgChild : imgSnapshot.getChildren()) {
+                                imageList.add(imgChild);
+                            }
+                            info.setImageSnapshots(imageList);
+                            fullPostList.add(info);
+                            if (nganhHang != null) {
+                                int count = categoryCountMap.containsKey(nganhHang) ? categoryCountMap.get(nganhHang) : 0;
+                                categoryCountMap.put(nganhHang, count + 1);
+                            }
+                            if (selectedCategory.equals("---") || selectedCategory.equals("All") || (nganhHang != null && nganhHang.equals(selectedCategory))) {
+                                filteredPostList.add(info);
                                 requireActivity().runOnUiThread(() -> {
-                                    viewPagerItemArrayList.add(viewPagerItem);
-                                    vpAdapter.notifyItemInserted(viewPagerItemArrayList.size() - 1);
+                                    vpAdapter.notifyItemInserted(filteredPostList.size() - 1);
                                 });
                             }
+
+                            for (DataSnapshot imgChild : imgSnapshot.getChildren()) {
+                                String linkhinh = imgChild.child("linkHinh").getValue(String.class);
+                                if (!uniqueImageLinks.contains(linkhinh)) {
+                                    uniqueImageLinks.add(linkhinh);
+                                    ViewPagerItem viewPagerItem = new ViewPagerItem(linkhinh, name, diaChi, thongTinChiTiet, uid);
+                                    requireActivity().runOnUiThread(() -> {
+                                        viewPagerItemArrayList.add(viewPagerItem);
+                                        vpAdapter.notifyItemInserted(viewPagerItemArrayList.size() - 1);
+                                    });
+                                }
+                            }
+                        } else {
+                            Log.w("BlankFragment", "Fragment không còn attached, bỏ qua xử lý.");
                         }
                     }
 
@@ -188,7 +194,11 @@ public class BlankFragment extends Fragment {
                     @Override public void onCancelled(@NonNull DatabaseError error) {
                         Log.e("Firebase", "Error loading data", error.toException());
                     }
-                });
+                };
+
+                myRef.addChildEventListener(listener);
+                listeners.add(listener); // Lưu listener
+                refs.add(myRef);         // Lưu reference
             }
         }).start();
     }
@@ -294,8 +304,8 @@ public class BlankFragment extends Fragment {
     }
 
     private void loadDataFromFirebase() {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("ThongTin_UpLoad");
-        ref.addChildEventListener(new ChildEventListener() {
+        categoryRef = FirebaseDatabase.getInstance().getReference("ThongTin_UpLoad");
+        categoryListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot userSnapshot, @Nullable String previousChildName) {
                 for (DataSnapshot postSnapshot : userSnapshot.getChildren()) {
@@ -316,7 +326,8 @@ public class BlankFragment extends Fragment {
             @Override public void onChildRemoved(@NonNull DataSnapshot snapshot) { }
             @Override public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) { }
             @Override public void onCancelled(@NonNull DatabaseError error) { }
-        });
+        };
+        categoryRef.addChildEventListener(categoryListener);
     }
 
     private void updateCategoryList() {
@@ -379,5 +390,19 @@ public class BlankFragment extends Fragment {
             }
         }
         vpAdapter.notifyDataSetChanged();
+    }
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Hủy tất cả listener trong loadData()
+        for (int i = 0; i < listeners.size(); i++) {
+            if (refs.get(i) != null && listeners.get(i) != null) {
+                refs.get(i).removeEventListener(listeners.get(i));
+            }
+        }
+        // Hủy listener trong loadDataFromFirebase()
+        if (categoryRef != null && categoryListener != null) {
+            categoryRef.removeEventListener(categoryListener);
+        }
     }
 }

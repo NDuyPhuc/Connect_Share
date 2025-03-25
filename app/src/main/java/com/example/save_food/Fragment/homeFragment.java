@@ -114,7 +114,7 @@ public class homeFragment extends Fragment {
                     // Chuyển sang BlankFragment
                     FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                     transaction.replace(R.id.content_frame, fragment);
-                    transaction.addToBackStack(null);
+//                    transaction.addToBackStack(null);
                     transaction.commit();
                     getLastLocation();
                     FirebaseUser user = auth.getCurrentUser();
@@ -282,72 +282,74 @@ public class homeFragment extends Fragment {
             usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists() && dataSnapshot.hasChild("Latitude") && dataSnapshot.hasChild("Longitude")) {
-                        double latitude = dataSnapshot.child("Latitude").getValue(Double.class);
-                        double longitude = dataSnapshot.child("Longitude").getValue(Double.class);
-                        String url = dataSnapshot.child("image").getValue(String.class);
-                        userLocation = new UserLocation(uidListupload.get(uiduser), latitude, longitude, url);
-                        userLocations.add(userLocation);
-                        userLocationsCopy.add(userLocation);
-                        if (uiduser == uidListupload.size() - 1) {
-                            showmap.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    // Kiểm tra quyền vị trí trước khi thực hiện hoạt động
-                                    if (checkLocationPermission()) {
-                                        // Quyền vị trí đã được cấp phép, thực hiện các hoạt động liên quan đến vị trí
-                                        processUserLocations(getActivity(), userLocations);
-                                    } else {
-                                        // Người dùng chưa cấp phép quyền vị trí
-                                        // Có thể hiển thị thông báo hoặc thực hiện các hành động khác tùy thuộc vào yêu cầu của bạn
+                    if (isAdded()) {
+                        if (dataSnapshot.exists() && dataSnapshot.hasChild("Latitude") && dataSnapshot.hasChild("Longitude")) {
+                            double latitude = dataSnapshot.child("Latitude").getValue(Double.class);
+                            double longitude = dataSnapshot.child("Longitude").getValue(Double.class);
+                            String url = dataSnapshot.child("image").getValue(String.class);
+                            userLocation = new UserLocation(uidListupload.get(uiduser), latitude, longitude, url);
+                            userLocations.add(userLocation);
+                            userLocationsCopy.add(userLocation);
+                            if (uiduser == uidListupload.size() - 1) {
+                                showmap.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        // Kiểm tra quyền vị trí trước khi thực hiện hoạt động
+                                        if (checkLocationPermission()) {
+                                            // Quyền vị trí đã được cấp phép, thực hiện các hoạt động liên quan đến vị trí
+                                            processUserLocations(getActivity(), userLocations);
+                                        } else {
+                                            // Người dùng chưa cấp phép quyền vị trí
+                                            // Có thể hiển thị thông báo hoặc thực hiện các hành động khác tùy thuộc vào yêu cầu của bạn
 //                                        Toast.makeText(getActivity(), "Vui lòng cấp phép quyền vị trí để sử dụng tính năng này", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
-                                }
-                            });
-                            if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
-                                    != PackageManager.PERMISSION_GRANTED ||
-                                    ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
-                                            != PackageManager.PERMISSION_GRANTED) {
+                                });
+                                if (isAdded() && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-                                // Yêu cầu cấp quyền truy cập vị trí
-                                ActivityCompat.requestPermissions(getActivity(),
-                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                                        100);
-                                return;
+                                    // Yêu cầu cấp quyền truy cập vị trí từ fragment
+                                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
+                                    return;
+                                }
+                                else if (!isAdded()) {
+                                    Log.w("homeFragment", "Fragment không còn attached, không thể kiểm tra quyền.");
+                                }
+
+
+                                fusedLocationProviderClient.getLastLocation()
+                                        .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+                                            @Override
+                                            public void onSuccess(Location location) {
+                                                if (location != null) {
+                                                    // Lấy được vị trí hiện tại của người dùng
+                                                    currentLocation = location;
+                                                    if (currentLocation == null) {
+//                                                    Toast.makeText(getActivity(), "Không thể lấy vị trí hiện tại", Toast.LENGTH_SHORT).show();
+                                                        // Sử dụng dữ liệu mặc định hoặc ẩn một số chức năng
+                                                    } else {
+                                                        TinhKhoangCach(userLocations, currentLocation);
+                                                    }
+
+
+                                                }
+                                            }
+                                        });
+
                             }
 
-                            fusedLocationProviderClient.getLastLocation()
-                                    .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
-                                        @Override
-                                        public void onSuccess(Location location) {
-                                            if (location != null) {
-                                                // Lấy được vị trí hiện tại của người dùng
-                                                currentLocation = location;
-                                                if (currentLocation == null) {
-//                                                    Toast.makeText(getActivity(), "Không thể lấy vị trí hiện tại", Toast.LENGTH_SHORT).show();
-                                                    // Sử dụng dữ liệu mặc định hoặc ẩn một số chức năng
-                                                } else {
-                                                    TinhKhoangCach(userLocations, currentLocation);
-                                                }
+                            // Di chuyển lệnh Log.d vào bên trong phương thức onDataChange()
+                            //Log.d("AAA" + uiduser + " ", userLocations.get(uiduser).getLatitude() + " - " + userLocations.get(uiduser).getLongitude() + " - " + userLocations.get(uiduser).getUid() );
+                            Log.d("Size", String.valueOf(userLocations.size()));
 
-
-                                            }
-                                        }
-                                    });
-
+                        } else {
+                            Log.d("CCC", "Lỗi!!!!");
+//                        Intent intent = new Intent(getActivity(), MapsActivity.class);
+//                        startActivity(intent);
                         }
-
-                        // Di chuyển lệnh Log.d vào bên trong phương thức onDataChange()
-                        //Log.d("AAA" + uiduser + " ", userLocations.get(uiduser).getLatitude() + " - " + userLocations.get(uiduser).getLongitude() + " - " + userLocations.get(uiduser).getUid() );
-                        Log.d("Size", String.valueOf(userLocations.size()));
-
                     }
-                    else {
-                        Log.d("CCC", "Lỗi!!!!");
-                        Intent intent = new Intent(getActivity(), MapsActivity.class);
-                        startActivity(intent);
+                    else{
+                        Log.w("homeFragment", "Fragment không còn attached, bỏ qua xử lý.");
                     }
-
                 }
 
 //                @Override
@@ -377,6 +379,7 @@ public class homeFragment extends Fragment {
     }
     //
     private void processUserLocations(Context context, ArrayList<UserLocation> userLocations) {
+        Log.d("homeFragment", "Mở MapsActivity");
         Intent intent = new Intent(context, MapsActivity.class);
         Gson gson = new Gson();
         String userLocationsJson = gson.toJson(userLocations);

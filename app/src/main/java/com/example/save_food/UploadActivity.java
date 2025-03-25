@@ -31,6 +31,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.save_food.Fragment.BlankFragment;
 import com.example.save_food.adapter.RecyclerApdapter;
 import com.example.save_food.models.HinhAnh_Upload;
 import com.example.save_food.models.ThongTin_UpLoadClass;
@@ -153,7 +154,11 @@ public class UploadActivity extends AppCompatActivity implements RecyclerApdapte
                                     for(int i=0;i<uri.size();i++){
                                         uploadToFirebase(uri.get(i));
                                     }
-                                    onBackPressed(); finish();
+                                    Log.d("UploadActivity", "Chuyển về MainActivity");
+                                    Intent intent = new Intent(UploadActivity.this, MainActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                    startActivity(intent);
+                                    finish();
                                     GetDataFireBase();
                                     Toast.makeText(UploadActivity.this, "Đã đăng tải thành công!", Toast.LENGTH_SHORT).show();
 
@@ -323,6 +328,7 @@ public class UploadActivity extends AppCompatActivity implements RecyclerApdapte
     public void clicked(int getSize) {
 
     }
+
 
     @Override
     public void itemClick(int position) {

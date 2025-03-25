@@ -1,6 +1,7 @@
 package com.example.save_food;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -8,14 +9,17 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import com.example.save_food.Fragment.BlankFragment;
 import com.example.save_food.models.MyClusterItem;
 import com.example.save_food.models.MyClusterRenderer;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -54,6 +58,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         getLastLocation();
+        // Gán sự kiện cho button quay về MainActivity
+        Button btnBackToMain = findViewById(R.id.btnBackToMain);
+        btnBackToMain.setOnClickListener(v -> {
+            // Nếu MainActivity là activity gọi MapsActivity, finish() là đủ.
+            finish();
+
+            // Nếu muốn khởi tạo lại MainActivity, bạn có thể sử dụng:
+//             Intent intent = new Intent(MapsActivity.this, MainActivity.class);
+//             startActivity(intent);
+        });
     }
 
     private void getLastLocation() {
@@ -83,7 +97,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 });
     }
-
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
@@ -212,11 +229,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     };
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     protected void onStart() {
         super.onStart();
-        registerReceiver(locationToggleReceiver, new IntentFilter("LOCATION_TOGGLE"), Context.RECEIVER_NOT_EXPORTED);
+        IntentFilter filter = new IntentFilter("LOCATION_TOGGLE");
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            registerReceiver(locationToggleReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(locationToggleReceiver, filter);
+        }
     }
+
 
     @Override
     protected void onStop() {
